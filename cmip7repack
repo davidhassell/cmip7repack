@@ -1,0 +1,147 @@
+#!/bin/bash
+
+# ====================================================================
+#
+# cmip7repack
+#
+# 
+#
+# ====================================================================
+vn=0.1
+dt="2025-09-12"
+
+iam=$0
+iam_path=$(which $iam)
+iam=$(basename $iam)
+
+helpFunction()
+{
+   echo "Usage: $iam [-h|--help] [-o|--overwrite] [-v|--version] [-z|--dry-run] FILE [FILE ...]"
+   echo -e "\t-h|--help\tDisplay this help and exit."
+   echo -e "\t-o|--overwrite\tOverwrite each original file with its repacked version, if the repacking was successful."
+   echo -e "\t-v|--version\tPrint version number and exit."
+   echo -e "\t-z|--dry-run\tDo a dry run: Show the repacking packing command for each file, but do not execute it."
+   echo -e "\tFILE [FILE ...]\tOne or more netCDF files to be repacked."
+   exit 0
+}
+
+# --------------------------------------------------------------------
+# Parse command line options
+# --------------------------------------------------------------------
+while true; do
+    case "$1" in
+	-h | --help) helpFunction ;;
+	-o | --overwrite) overwrite=true; shift ;;
+	-v | --version) version=true; shift ;;
+	-z | --dry-run) dry_run=true; shift ;;
+	* ) break ;;
+    esac
+done
+
+echo "$iam: Version $vn at $iam_path"
+if [ "$version" = "true" ]
+then
+    exit 0
+fi
+
+# --------------------------------------------------------------------
+# Check that HDF5 exectuables are installed
+# --------------------------------------------------------------------
+h5repack_path=$(which h5repack)
+if [ $? -ne 0 ]
+then
+    echo "$iam: ERROR: Must install h5repack to use $iam (it is usually installed as part of the netCDF library)"
+    exit 2
+fi
+echo "$iam: $(h5repack -V) at $h5repack_path"
+
+h5stat_path=$(which h5stat)
+if [ $? -ne 0 ]
+then
+    echo "$iam: ERROR: Must install h5stat to use $iam (it is usually installed as part of the netCDF library)"
+    exit 2
+fi
+
+h5dump_path=$(which h5dump)
+if [ $? -ne 0 ]
+then
+    echo "$iam: ERROR: Must install h5dump to use $iam (it is usually installed as part of the netCDF library)"
+    exit 2
+fi
+
+# --------------------------------------------------------------------
+# Loop over input files
+# --------------------------------------------------------------------
+start0=`date +%s`
+N=0
+for file in $@
+do
+    echo ""
+    echo "$iam: date-time: $(date)"
+    echo "$iam: preparing to repack $file"
+
+    # Get the --metadata_block_size option to h5repack
+    metadata_block_size=$(h5stat -S $file \
+			      | sed -n -E 's/^[[:space:]]*File metadata:[[:space:]]*([0-9]+).*/\1/p')
+    if [ "$metadata_block_size" != "" ]
+    then
+	metadata_block_size="--metadata_block_size=$metadata_block_size"
+    else
+	metadata_block_size=""
+    fi
+    
+    # Get the -l and -f options to h5repack
+    time=""
+    for variable in "/time" "/time_bounds"
+    do
+	CHUNK=$(h5dump -H -d ${variable} $file 2>/dev/null \
+		    | grep "DATASPACE  SIMPLE" -m 1 \
+		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
+	if [ "$CHUNK" != "" ]
+	then
+	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=4"
+	fi
+    done
+    
+    if [ "$metadata_block_size$time" = "" ]
+    then
+	echo "$iam: can't repack $file: Couldn't find /time or /time_bounds variables, nor the metadata block size"
+	echo "$iam: file $file is unchanged"	
+	continue	    
+    fi
+
+    # Still here? Define the repacking command
+    repacked_file=${file}_cmip7_repacked    
+    command="h5repack $metadata_block_size $time $file $repacked_file"
+    echo "$iam: repack command: $command"
+    if [ "$dry_run" != "" ]
+    then
+	echo "$iam: dry-run: not executing"
+	continue
+    fi
+
+    # Still here? Execute the repacking command
+    echo "$iam: executing command (may take some time ...)"
+    start_time=`date +%s`
+    h5repack $metadata_block_size $time $file $repacked_file
+    end_time=`date +%s`    
+    if [ $? -eq 0 ]
+    then
+	# Successfully repacked
+	N=$(($N + 1))
+	echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
+	if [ "$overwrite" != "" ]
+	then
+	    # Overwrite original file with repacked file
+	    mv_output=$(mv -v $repacked_file $file)
+	    echo "$iam: $mv_output"
+	fi
+    else
+	echo "$iam: FAILED to repack $file"
+	echo "$iam: file $file is unchanged"
+    fi
+done
+end0=`date +%s`    
+
+echo ""
+echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
