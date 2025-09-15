@@ -141,7 +141,7 @@ do
     # Still here? Execute the repacking command
     echo "$iam: executing repack command (may take some time ...)"
     start_time=`date +%s`
-    h5repack $metadata_block_size $time $file $repacked_file
+    h5repack $metadata_block_size $time $data $file $repacked_file
     end_time=`date +%s`    
     if [ $? -eq 0 ]
     then
@@ -161,8 +161,5 @@ do
 done
 end0=`date +%s`    
 
-if [ "$dry_run" != "" ]
-then
-    echo ""
-    echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
-fi
+echo ""
+echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
