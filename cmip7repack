@@ -8,7 +8,7 @@
 #
 # ====================================================================
 vn=0.1
-dt="2025-09-12"
+release_date="2025-09-15"
 
 iam=$0
 iam_path=$(which $iam)
@@ -16,20 +16,35 @@ iam=$(basename $iam)
 
 helpFunction()
 {
-   echo "Usage: $iam [-h|--help] [-o|--overwrite] [-v|--version] [-z|--dry-run] FILE [FILE ...]"
-   echo -e "\t-h|--help\tDisplay this help and exit."
-   echo -e "\t-o|--overwrite\tOverwrite each original file with its repacked version, if the repacking was successful."
-   echo -e "\t-v|--version\tPrint version number and exit."
-   echo -e "\t-z|--dry-run\tDo a dry run: Show the repacking packing command for each file, but do not execute it."
-   echo -e "\tFILE [FILE ...]\tOne or more netCDF files to be repacked."
+   echo "Usage: $iam [-d size] [-h] [-o] [-v] [-z] FILE [FILE ...]"
+   echo -e "    -d|--data size  The chunk size (in bytes) for the data variable."
+   echo -e "                    Defaults to 4194304 (= 4 MiB)."
+   echo -e "    -h|--help       Display this help and exit."
+   echo -e "    -o|--overwrite  Overwrite each original file with its repacked"
+   echo -e "                    version, if the repacking was successful."
+   echo -e "                    By default, a new file with the suffix"
+   echo -e "                    '_cmip7repack' is created for each input file."
+   echo -e "    -v|--version    Print version number and exit."
+   echo -e "    -z|--dry-run    Do a dry run: Show the repacking packing command"
+   echo -e "                    for each file, but do not execute it."
+   echo -e "    FILE [FILE ...] One or more netCDF files to be repacked."
    exit 0
 }
 
 # --------------------------------------------------------------------
 # Parse command line options
 # --------------------------------------------------------------------
+if [ $# -eq 0 ] ; then
+    helpFunction
+    exit 0
+fi
+
+# Defaults
+size=4194304
+
 while true; do
     case "$1" in
+	-d | --data) size=$2 ; shift ; shift ;;
 	-h | --help) helpFunction ;;
 	-o | --overwrite) overwrite=true; shift ;;
 	-v | --version) version=true; shift ;;
@@ -90,7 +105,7 @@ do
 	metadata_block_size=""
     fi
     
-    # Get the -l and -f options to h5repack
+    # Get the -l and -f options to h5repack for the time variables
     time=""
     for variable in "/time" "/time_bounds"
     do
@@ -110,18 +125,21 @@ do
 	continue	    
     fi
 
+    # Get the -l and -f options to h5repack for the data variables
+    data=""
+    
     # Still here? Define the repacking command
-    repacked_file=${file}_cmip7_repacked    
-    command="h5repack $metadata_block_size $time $file $repacked_file"
+    repacked_file=${file}_cmip7repack
+    command="h5repack $metadata_block_size $time $data $file $repacked_file"
     echo "$iam: repack command: $command"
     if [ "$dry_run" != "" ]
     then
-	echo "$iam: dry-run: not executing"
+        echo "$iam: dry-run: not executing"
 	continue
     fi
-
+    
     # Still here? Execute the repacking command
-    echo "$iam: executing command (may take some time ...)"
+    echo "$iam: executing repack command (may take some time ...)"
     start_time=`date +%s`
     h5repack $metadata_block_size $time $file $repacked_file
     end_time=`date +%s`    
@@ -132,8 +150,8 @@ do
 	echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
 	if [ "$overwrite" != "" ]
 	then
-	    # Overwrite original file with repacked file
-	    mv_output=$(mv -v $repacked_file $file)
+            # Overwrite original file with repacked file
+            mv_output=$(mv -v $repacked_file $file)
 	    echo "$iam: $mv_output"
 	fi
     else
@@ -143,5 +161,8 @@ do
 done
 end0=`date +%s`    
 
-echo ""
-echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
+if [ "$dry_run" != "" ]
+then
+    echo ""
+    echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
+fi
