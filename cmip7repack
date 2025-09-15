@@ -120,9 +120,9 @@ do
     
     if [ "$metadata_block_size$time" = "" ]
     then
-	echo "$iam: can't repack $file: Couldn't find /time or /time_bounds variables, nor the metadata block size"
-	echo "$iam: file $file is unchanged"	
-	continue	    
+        echo "$iam: can't repack $file: Couldn't find /time or /time_bounds variables, nor the metadata block size"
+        echo "$iam: file $file is unchanged"	
+        continue	    
     fi
 
     # Get the -l and -f options to h5repack for the data variables
