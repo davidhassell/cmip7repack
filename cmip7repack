@@ -146,17 +146,17 @@ do
     if [ $? -eq 0 ]
     then
 	# Successfully repacked
-	N=$(($N + 1))
-	echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
+        N=$(($N + 1))
+        echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
 	if [ "$overwrite" != "" ]
 	then
             # Overwrite original file with repacked file
             mv_output=$(mv -v $repacked_file $file)
-	    echo "$iam: $mv_output"
+            echo "$iam: $mv_output"
 	fi
     else
-	echo "$iam: FAILED to repack $file"
-	echo "$iam: file $file is unchanged"
+        echo "$iam: FAILED to repack $file"
+        echo "$iam: file $file is unchanged"
     fi
 done
 end0=`date +%s`    
