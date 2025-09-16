@@ -4,7 +4,7 @@
 
 ## Installation
 
-To install `cmip7repack`, download the script in this repository with that name, and give it executable permissions. 
+To install `cmip7repack`, download the shell script in this repository with that name and give it executable permissions. 
 
 ## Usage
 
