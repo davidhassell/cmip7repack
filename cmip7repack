@@ -16,25 +16,61 @@ iam=$(basename $iam)
 
 helpFunction()
 {
-    #     ----------------------------------------------------------------------
-    echo "Usage: $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]"
-    echo "    -d|--data size  Also rechunk the data variable to have the given"
-    echo "                    chunk size (in bytes), but only if the original"
-    echo "                    chunk size is smaller than the new value. Only"
-    echo "                    chunks along the leading axis may be changed"
-    echo "                    (which is usually the time axis). By default the"
-    echo "                    data variable is not rechunked."
-    echo "    -h|--help       Display this help and exit."
-    echo "    -o|--overwrite  Overwrite each original file with its repacked"
-    echo "                    version, if the repacking was successful. By"
-    echo "                    default, a new file with the suffix '_cmip7repack'"
-    echo "                    is created for each input file."
-    echo "    -v|--version    Print version number and exit."
-    echo "    -x|--dry-run    Do a dry run: Show the repacking command for each"
-    echo "                    file, but do not run it."
-    echo "    -z|--gzip n     Specify the deflate compression level (between 1"
-    echo "                    and 9, default 4) for rechunked data variables."
-    echo "    FILE [FILE ...] One or more netCDF-4 files to be repacked."
+    cat << EOF
+NAME
+    $iam - repack CMIP7 netCDF-4 datasets
+
+SYNOPSIS
+    $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+
+DESCRIPTION
+    For each netCDF-4 FILE, $iam will
+
+    1) Collate all of the B-trees to a contiguous block at the start
+       of the file.
+
+    2) Rechunk the time coordinate variable, if it exists, to have a
+       single compressed chunk.
+
+    3) Rechunk the time_bounds coordinate variable, if it exists, to
+       have a single compressed chunk.
+
+    4) Optionally rechunk the leading axis of the data variable to a
+       given chunk size, but only if the original chunk size is
+       smaller than the new value.
+
+    -d|--data size  Also rechunk the data variable to have the given
+                    chunk size (in bytes), but only if the original
+                    chunk size is smaller than the new value. Only
+                    chunks along the leading axis may be changed
+                    (which is usually the time axis). By default the
+                    data variable is not rechunked.
+
+    -h|--help       Display this help and exit.
+
+    -o|--overwrite  Overwrite each original file with its repacked
+                    version, if the repacking was successful. By
+                    default, a new file with the suffix '_cmip7repack'
+                    is created for each input file.
+
+    -v|--version    Print version number and exit.
+
+    -x|--dry-run    Do a dry run: Show the repacking command for each
+                    file, but do not run it.
+
+    -z|--gzip n     Specify the deflate compression level (between 1
+                    and 9, default 4) for rechunked data variables.
+
+AUTHOR
+    Written by David Hassell and Ezequiel Cimadevilla.
+
+COPYRIGHT
+    Copyright © 2025 License BSD 3-Clause
+    <https://opensource.org/license/bsd-3-clause>. This is free
+    software: you are free to change and redistribute it. There is NO
+    WARRANTY, to the extent permitted by law.
+
+EOF
     exit 0
 }
 
@@ -74,7 +110,7 @@ then
 fi
 
 # --------------------------------------------------------------------
-# Check that HDF5 commands are available
+# Check that the HDF5 commands are available
 # --------------------------------------------------------------------
 h5repack_path=$(which h5repack)
 if [ $? -ne 0 ]

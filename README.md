@@ -11,24 +11,50 @@ To install `cmip7repack`, download the shell script in this repository with that
 The full list of command-line options for `cmip7repack` is:
 
 ```
-Usage: cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+$ cmip7repack -h
+NAME
+    cmip7repack - repack CMIP7 netCDF-4 datasets
+
+SYNOPSIS
+    cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+
+DESCRIPTION
+    For each netCDF-4 FILE, cmip7repack will
+
+    1) Collate all of the B-trees to a contiguous block at the start
+       of the file.
+
+    2) Rechunk the time coordinate variable, if it exists, to have a
+       single compressed chunk.
+
+    3) Rechunk the time_bounds coordinate variable, if it exists, to
+       have a single compressed chunk.
+
+    4) Optionally rechunk the leading axis of the data variable to a
+       given chunk size, but only if the original chunk size is
+       smaller than the new value.
+
     -d|--data size  Also rechunk the data variable to have the given
                     chunk size (in bytes), but only if the original
                     chunk size is smaller than the new value. Only
                     chunks along the leading axis may be changed
                     (which is usually the time axis). By default the
                     data variable is not rechunked.
+
     -h|--help       Display this help and exit.
+
     -o|--overwrite  Overwrite each original file with its repacked
                     version, if the repacking was successful. By
                     default, a new file with the suffix '_cmip7repack'
                     is created for each input file.
+
     -v|--version    Print version number and exit.
+
     -x|--dry-run    Do a dry run: Show the repacking command for each
                     file, but do not run it.
+
     -z|--gzip n     Specify the deflate compression level (between 1
                     and 9, default 4) for rechunked data variables.
-    FILE [FILE ...] One or more netCDF-4 files to be repacked.
 ```
 
 In practice it is expected that, after initial testing, running with only the `-o|--overwrite` option will be always be acceptable:
