@@ -16,19 +16,27 @@ iam=$(basename $iam)
 
 helpFunction()
 {
-   echo "Usage: $iam [-d size] [-h] [-o] [-v] [-z] FILE [FILE ...]"
-   echo -e "    -d|--data size  The chunk size (in bytes) for the data variable."
-   echo -e "                    Defaults to 4194304 (= 4 MiB)."
-   echo -e "    -h|--help       Display this help and exit."
-   echo -e "    -o|--overwrite  Overwrite each original file with its repacked"
-   echo -e "                    version, if the repacking was successful."
-   echo -e "                    By default, a new file with the suffix"
-   echo -e "                    '_cmip7repack' is created for each input file."
-   echo -e "    -v|--version    Print version number and exit."
-   echo -e "    -z|--dry-run    Do a dry run: Show the repacking packing command"
-   echo -e "                    for each file, but do not execute it."
-   echo -e "    FILE [FILE ...] One or more netCDF files to be repacked."
-   exit 0
+    #        ----------------------------------------------------------------------
+
+    echo "Usage: $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]"
+    echo -e "    -d|--data size  Also rechunk the data variable to have the given"
+    echo -e "                    chunk size (in bytes), but only if the original"
+    echo -e "                    chunk size is smaller than the new value."
+    echo -e "                    Only chunks along the leading axis may be "
+    echo -e "                    changed (which is usually the time axis). By "
+    echo -e "                    default the data variable is not rechunked."
+    echo -e "    -h|--help       Display this help and exit."
+    echo -e "    -o|--overwrite  Overwrite each original file with its repacked"
+    echo -e "                    version, if the repacking was successful."
+    echo -e "                    By default, a new file with the suffix"
+    echo -e "                    '_cmip7repack' is created for each input file."
+    echo -e "    -v|--version    Print version number and exit."
+    echo -e "    -x|--dry-run    Do a dry run: Show the repacking command for"
+    echo -e "                    each file, but do not run it."
+    echo -e "    -z|--gzip n     Specify the deflate compression level (between 1"
+    echo -e "                    and 9, default 4) for rechunked data variables."
+    echo -e "    FILE [FILE ...] One or more netCDF-4 files to be repacked."
+    exit 0
 }
 
 # --------------------------------------------------------------------
@@ -40,27 +48,34 @@ if [ $# -eq 0 ] ; then
 fi
 
 # Defaults
-size=4194304
+gzip=4
+size=false
+version=false
+overwrite=false
+dry_run=false
 
-while true; do
-    case "$1" in
-	-d | --data) size=$2 ; shift ; shift ;;
-	-h | --help) helpFunction ;;
-	-o | --overwrite) overwrite=true; shift ;;
-	-v | --version) version=true; shift ;;
-	-z | --dry-run) dry_run=true; shift ;;
-	* ) break ;;
-    esac
+while getopts ":d:hovxz:" opt; do
+  case $opt in
+    d) size=$OPTARG ;;
+    h) helpFunction ;;
+    o) overwrite=true ;;
+    v) version=true ;;
+    x) dry_run=true ;;
+    z) gzip=$OPTARG ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; helpFunction ;;
+    :)  echo "Option -$OPTARG requires an argument." >&2; helpFunction ;;
+  esac
 done
+shift $((OPTIND -1))
 
 echo "$iam: Version $vn at $iam_path"
-if [ "$version" = "true" ]
+if [ "$version" = true ]
 then
     exit 0
 fi
 
 # --------------------------------------------------------------------
-# Check that HDF5 exectuables are installed
+# Check that HDF5 commands are available
 # --------------------------------------------------------------------
 h5repack_path=$(which h5repack)
 if [ $? -ne 0 ]
@@ -84,11 +99,12 @@ then
     exit 2
 fi
 
+
 # --------------------------------------------------------------------
 # Loop over input files
 # --------------------------------------------------------------------
 start0=`date +%s`
-N=0
+N=0  # Number of repacked input files
 for file in $@
 do
     echo ""
@@ -101,54 +117,131 @@ do
     if [ "$metadata_block_size" != "" ]
     then
 	metadata_block_size="--metadata_block_size=$metadata_block_size"
-    else
-	metadata_block_size=""
     fi
     
-    # Get the -l and -f options to h5repack for the time variables
+    # ----------------------------------------------------------------
+    # Get the h5repack -l and -f options for the time variables
+    #
+    # For instance:
+    #
+    #   From h5dump output:
+    #     '   DATASPACE  SIMPLE { ( 6000 ) / ( H5S_UNLIMITED ) }'
+    #   get:
+    #     -l /time:CHUNK=6000 -f /time:GZIP=4
+    #   
+    #   From h5dump output:
+    #     '   DATASPACE  SIMPLE { ( 6000, 2 ) / ( H5S_UNLIMITED, 2 ) }'
+    #   get:
+    #     -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4
+    # ----------------------------------------------------------------
     time=""
     for variable in "/time" "/time_bounds"
     do
-	CHUNK=$(h5dump -H -d ${variable} $file 2>/dev/null \
+	CHUNK=$(h5dump --dataset ${variable} --header $file 2>/dev/null \
 		    | grep "DATASPACE  SIMPLE" -m 1 \
 		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
 	if [ "$CHUNK" != "" ]
 	then
-	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=4"
+	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
 	fi
     done
     
-    if [ "$metadata_block_size$time" = "" ]
+    # ----------------------------------------------------------------
+    # Get the h5repack -l and -f options for the data variable
+    # (optional)
+    #
+    # For instance:
+    #
+    #   -l /uas:CHUNK=50x143x144 -f /uas:GZIP=4
+    # ----------------------------------------------------------------
+    data=""
+    if [ "$size" != false ]
     then
-        echo "$iam: can't repack $file: Couldn't find /time or /time_bounds variables, nor the metadata block size"
+        # Find the data variable name
+        variable=$(h5dump --attribute variable_id $file 2>/dev/null \
+    		       | grep "(0)" -m 1 \
+    		       | sed -n 's/.*"\(\w*\)"/\1/p')
+        
+        if [ "$variable" != "" ]
+        then
+            # Find number of bytes per word in the data
+            datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
+        		   | grep "DATATYPE" -m 1)
+            if [ "$(echo $datatype | grep 32)" != "" ]
+            then
+                wordsize=4
+            else
+                wordsize=8
+            fi
+    	    
+    	    # Find the chunk shape
+    	    CHUNK=""
+    	    chunks=$(h5dump --dataset ${variable} --properties --header $file 2>/dev/null \
+    			 | grep "CHUNKED (" -m 1 \
+    			 | sed -n 's/.*(\(.*\)).*/\1/p' \
+    			 | sed 's/,\s*/ /g')     
+    	    chunks=($chunks)
+	    
+	    # Number of data dimensions
+	    ndim=${#chunks[@]}
+	    
+	    # Iteratively change the chunk size of first (0) dimension
+	    chunks[0]=$(( $size / $wordsize ))
+	    n=1
+	    while [ $n -lt $ndim ]
+	    do
+		chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
+		n=$(( $n + 1 ))
+	    done
+	    
+	    CHUNK=${chunks[0]}
+	    if [ $CHUNK -eq 0 ]
+	    then
+		CHUNK=""
+	    else
+		n=1
+		while [ $n -lt $ndim ]
+		do
+		    CHUNK=${CHUNK}x${chunks[$n]}
+		    n=$(( $n + 1 ))
+		done
+	    fi
+	fi
+	
+        if [ "$CHUNK" != "" ]
+	then
+	    data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
+	fi	
+    fi
+    
+    if [ "$metadata_block_size$time$data" = "" ]
+    then
+        echo "$iam: can't repack $file: Couldn't find /time, /time_bounds variables or data variables, nor the metadata block size"
         echo "$iam: file $file is unchanged"	
         continue	    
     fi
 
-    # Get the -l and -f options to h5repack for the data variables
-    data=""
-    
     # Still here? Define the repacking command
     repacked_file=${file}_cmip7repack
     command="h5repack $metadata_block_size $time $data $file $repacked_file"
     echo "$iam: repack command: $command"
-    if [ "$dry_run" != "" ]
+    if [ "$dry_run" = true ]
     then
-        echo "$iam: dry-run: not executing"
+        echo "$iam: dry-run: not repacking"
 	continue
     fi
     
-    # Still here? Execute the repacking command
-    echo "$iam: executing repack command (may take some time ...)"
+    # Still here? Run the repacking command
+    echo "$iam: running repack command (may take some time ...)"
     start_time=`date +%s`
     h5repack $metadata_block_size $time $data $file $repacked_file
     end_time=`date +%s`    
     if [ $? -eq 0 ]
     then
 	# Successfully repacked
-        N=$(($N + 1))
+        N=$(( $N + 1 ))
         echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
-	if [ "$overwrite" != "" ]
+	if [ "$overwrite" = true ]
 	then
             # Overwrite original file with repacked file
             mv_output=$(mv -v $repacked_file $file)
@@ -161,5 +254,8 @@ do
 done
 end0=`date +%s`    
 
-echo ""
-echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
+if [ "$dry_run" = false ]
+then
+    echo ""
+    echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
+fi
