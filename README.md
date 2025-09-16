@@ -2,6 +2,12 @@
 
 `cmip7repack` is a command-line tool, bespoke to CMIP, which can be used by the modelling groups, prior to dataset publication, to "repack" their files (i.e. to re-organise the file contents to have a different chunk and B-tree layout) in such as way as to improve their read-performance over the lifetime of the CMIP7 archive (note that CMIP7 datasets are written only once, but read many times).
 
+## Installation
+
+To install `cmip7repack`, download the script in this repository with that name, and give it executable permissions. 
+
+## Usage
+
 The full list of command-line options for `cmip7repack` is:
 
 ```
@@ -24,12 +30,6 @@ $ Usage: cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
                     and 9, default 4) for rechunked data variables.
     FILE [FILE ...] One or more netCDF-4 files to be repacked.
 ```
-
-## Installation
-
-To install `cmip7repack`, download the script in this repository with that name, and give it executable permissions. 
-
-## Usage
 
 In practice it is expected that, after initial testing, running with only the `-o|--overwrite` option will be always be acceptable:
 
