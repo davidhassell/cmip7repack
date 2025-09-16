@@ -1,5 +1,7 @@
 # cmip7repack
 
+`cmip7repack` is a command line tool, bespoke to CMIP, which can be used by the modelling groups, prior to dataset publication, to "repack" their files (i.e. to re-organise the file contents to have a different chunk and B-tree layout) in such as way as to improve their read-performance over the lifetime of the CMIP7 archive (note that CMIP7 datasets are written only once, but read many times).
+
 The full list of command line options for `cmip7repack` is:
 
 ```
@@ -50,6 +52,6 @@ cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
 
 cmip7repack: start time: Mon 15 Sep 16:13:46 BST 2025
 cmip7repack: preparing to repack file.nc
-cmip7repack: repack command: h5repack --metadata_block_size=40988486 -l /time:CHUNK=292192 -f /time:GZIP=4 -l /time_bounds:CHUNK=292192x2 -f /time_bounds:GZIP=4 file.nv file.nc_cmip7repack
+cmip7repack: repack command: h5repack --metadata_block_size=40988486 -l /time:CHUNK=292192 -f /time:GZIP=4 -l /time_bounds:CHUNK=292192x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
 cmip7repack: dry-run: not repacking
 ```
