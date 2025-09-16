@@ -16,26 +16,25 @@ iam=$(basename $iam)
 
 helpFunction()
 {
-    #        ----------------------------------------------------------------------
-
+    #     ----------------------------------------------------------------------
     echo "Usage: $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]"
-    echo -e "    -d|--data size  Also rechunk the data variable to have the given"
-    echo -e "                    chunk size (in bytes), but only if the original"
-    echo -e "                    chunk size is smaller than the new value.w"
-    echo -e "                    Only chunks along the leading axis may be "
-    echo -e "                    changed (which is usually the time axis). By "
-    echo -e "                    default the data variable is not rechunked."
-    echo -e "    -h|--help       Display this help and exit."
-    echo -e "    -o|--overwrite  Overwrite each original file with its repacked"
-    echo -e "                    version, if the repacking was successful."
-    echo -e "                    By default, a new file with the suffix"
-    echo -e "                    '_cmip7repack' is created for each input file."
-    echo -e "    -v|--version    Print version number and exit."
-    echo -e "    -x|--dry-run    Do a dry run: Show the repacking command for"
-    echo -e "                    each file, but do not run it."
-    echo -e "    -z|--gzip n     Specify the deflate compression level (between 1"
-    echo -e "                    and 9, default 4) for rechunked data variables."
-    echo -e "    FILE [FILE ...] One or more netCDF-4 files to be repacked."
+    echo "    -d|--data size  Also rechunk the data variable to have the given"
+    echo "                    chunk size (in bytes), but only if the original"
+    echo "                    chunk size is smaller than the new value. Only"
+    echo "                    chunks along the leading axis may be changed"
+    echo "                    (which is usually the time axis). By default the"
+    echo "                    data variable is not rechunked."
+    echo "    -h|--help       Display this help and exit."
+    echo "    -o|--overwrite  Overwrite each original file with its repacked"
+    echo "                    version, if the repacking was successful. By"
+    echo "                    default, a new file with the suffix '_cmip7repack'"
+    echo "                    is created for each input file."
+    echo "    -v|--version    Print version number and exit."
+    echo "    -x|--dry-run    Do a dry run: Show the repacking command for each"
+    echo "                    file, but do not run it."
+    echo "    -z|--gzip n     Specify the deflate compression level (between 1"
+    echo "                    and 9, default 4) for rechunked data variables."
+    echo "    FILE [FILE ...] One or more netCDF-4 files to be repacked."
     exit 0
 }
 
