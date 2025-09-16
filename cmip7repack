@@ -21,7 +21,7 @@ helpFunction()
     echo "Usage: $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]"
     echo -e "    -d|--data size  Also rechunk the data variable to have the given"
     echo -e "                    chunk size (in bytes), but only if the original"
-    echo -e "                    chunk size is smaller than the new value."
+    echo -e "                    chunk size is smaller than the new value.w"
     echo -e "                    Only chunks along the leading axis may be "
     echo -e "                    changed (which is usually the time axis). By "
     echo -e "                    default the data variable is not rechunked."
@@ -244,10 +244,10 @@ do
     echo "$iam: running repack command (may take some time ...)"
     start_time=`date +%s`
     h5repack $metadata $time $data $file $repacked_file
-    end_time=`date +%s`    
     if [ $? -eq 0 ]
-    then
+    then	
 	# Successfully repacked
+	end_time=`date +%s`
         N=$(( $N + 1 ))
         echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
 	if [ "$overwrite" = true ]
