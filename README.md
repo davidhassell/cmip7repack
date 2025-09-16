@@ -55,6 +55,16 @@ DESCRIPTION
 
     -z|--gzip n     Specify the deflate compression level (between 1
                     and 9, default 4) for rechunked data variables.
+		    
+AUTHOR
+    Written by David Hassell and Ezequiel Cimadevilla.
+
+COPYRIGHT
+    Copyright © 2025 License BSD 3-Clause
+    <https://opensource.org/license/bsd-3-clause>. This is free
+    software: you are free to change and redistribute it. There is NO
+    WARRANTY, to the extent permitted by law.
+
 ```
 
 In practice it is expected that, after initial testing, running with only the `-o|--overwrite` option will be always be acceptable:
