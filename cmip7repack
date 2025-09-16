@@ -111,12 +111,21 @@ do
     echo "$iam: date-time: $(date)"
     echo "$iam: preparing to repack $file"
 
-    # Get the --metadata_block_size option to h5repack
-    metadata_block_size=$(h5stat -S $file \
-			      | sed -n -E 's/^[[:space:]]*File metadata:[[:space:]]*([0-9]+).*/\1/p')
-    if [ "$metadata_block_size" != "" ]
+    # ----------------------------------------------------------------
+    # Get the h5repack --metadata_block_size option
+    #
+    # For instance:
+    #
+    #  From h5stat -S output:
+    #    '  File metadata: 40988486 bytes'
+    #  get:
+    #    --metadata_block_size=40988486
+    # ----------------------------------------------------------------
+    metadata=$(h5stat -S $file \
+		   | sed -n -E 's/^[[:space:]]*File metadata:[[:space:]]*([0-9]+).*/\1/p')
+    if [ "$metadata" != "" ]
     then
-	metadata_block_size="--metadata_block_size=$metadata_block_size"
+	metadata="--metadata_block_size=$metadata"
     fi
     
     # ----------------------------------------------------------------
@@ -214,16 +223,16 @@ do
 	fi	
     fi
     
-    if [ "$metadata_block_size$time$data" = "" ]
+    if [ "$metadata$time$data" = "" ]
     then
-        echo "$iam: can't repack $file: Couldn't find /time, /time_bounds variables or data variables, nor the metadata block size"
+        echo "$iam: can't repack $file: Couldn't find /time, /time_bounds or data variables, nor the metadata block size"
         echo "$iam: file $file is unchanged"	
         continue	    
     fi
 
     # Still here? Define the repacking command
     repacked_file=${file}_cmip7repack
-    command="h5repack $metadata_block_size $time $data $file $repacked_file"
+    command="h5repack $metadata $time $data $file $repacked_file"
     echo "$iam: repack command: $command"
     if [ "$dry_run" = true ]
     then
@@ -234,7 +243,7 @@ do
     # Still here? Run the repacking command
     echo "$iam: running repack command (may take some time ...)"
     start_time=`date +%s`
-    h5repack $metadata_block_size $time $data $file $repacked_file
+    h5repack $metadata $time $data $file $repacked_file
     end_time=`date +%s`    
     if [ $? -eq 0 ]
     then
