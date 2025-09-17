@@ -34,30 +34,52 @@ DESCRIPTION
        given chunk size, but only if the original chunk size is
        smaller than the new value.
 
-    -d|--data size  Also rechunk the data variable to have the given
-                    chunk size (in bytes), but only if the original
-                    chunk size is smaller than the new value. Only
-                    chunks along the leading axis may be changed
-                    (which is usually the time axis). By default the
-                    data variable is not rechunked.
+    -d size  Also rechunk the data variable to have the given
+             uncompressed chunk size (in bytes), but only if the
+             original uncompressed chunk size is smaller than the new
+             value. The chunk shape will only be changed along the
+             leading dimension of the data (which is usually the time
+             axis). By default the data variable is not rechunked.
 
-    -h|--help       Display this help and exit.
+    -h       Display this help and exit.
 
-    -o|--overwrite  Overwrite each original file with its repacked
-                    version, if the repacking was successful. By
-                    default, a new file with the suffix '_cmip7repack'
-                    is created for each input file.
+    -o       Overwrite each original file with its repacked version,
+             if the repacking was successful. By default, a new file
+             with the suffix '_cmip7repack' is created for each input
+             file.
 
-    -v|--version    Print version number and exit.
+    -v       Print version number and exit.
 
-    -x|--dry-run    Do a dry run: Show the repacking command for each
-                    file, but do not run it.
+    -x       Do a dry run. Show the repacking command for each
+             file, but do not run it.
 
-    -z|--gzip n     Specify the deflate compression level (between 1
-                    and 9, default 4) for rechunked data variables.
-		    
+    -z n     Specify the deflate compression level (between 1 and 9,
+             default 4) for rechunked variables.
+
+EXAMPLES
+    Repack a file, replacing the original file with its repacked
+    version:
+
+    $ cmip7repack -o file.nc
+    cmip7repack: Version 0.1 at /bin/cmip7repack
+    cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
+    
+    cmip7repack: date-time: Wed 17 Sep 08:37:14 BST 2025
+    cmip7repack: preparing to repack 'file.nc'
+    cmip7repack: repack command: kh5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
+    cmip7repack: running repack command (may take some time ...)
+    cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
+    cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
+    
+    cmip7repack: Total of 1 files repacked in 13 seconds
+    $
+
 AUTHOR
     Written by David Hassell and Ezequiel Cimadevilla.
+
+REPORTING BUGS
+    Report any bugs to
+    <https://github.com/davidhassell/cmip7repack/issues>
 
 COPYRIGHT
     Copyright © 2025 License BSD 3-Clause
@@ -65,6 +87,8 @@ COPYRIGHT
     software: you are free to change and redistribute it. There is NO
     WARRANTY, to the extent permitted by law.
 
+SEE ALSO
+    h5repack(1)
 ```
 
 In practice it is expected that, after initial testing, running with only the `-o|--overwrite` option will be always be acceptable:

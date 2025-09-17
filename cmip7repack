@@ -4,8 +4,6 @@
 #
 # cmip7repack
 #
-# 
-#
 # ====================================================================
 vn=0.1
 release_date="2025-09-15"
@@ -14,6 +12,9 @@ iam=$0
 iam_path=$(which $iam)
 iam=$(basename $iam)
 
+synopsis="$iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]"
+usage="USAGE: $synopsis"
+
 helpFunction()
 {
     cat << EOF
@@ -21,7 +22,7 @@ NAME
     $iam - repack CMIP7 netCDF-4 datasets
 
 SYNOPSIS
-    $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+    $synopsis
 
 DESCRIPTION
     For each netCDF-4 FILE, $iam will
@@ -39,36 +40,61 @@ DESCRIPTION
        given chunk size, but only if the original chunk size is
        smaller than the new value.
 
-    -d|--data size  Also rechunk the data variable to have the given
-                    chunk size (in bytes), but only if the original
-                    chunk size is smaller than the new value. Only
-                    chunks along the leading axis may be changed
-                    (which is usually the time axis). By default the
-                    data variable is not rechunked.
+    -d size  Also rechunk the data variable to have the given
+             uncompressed chunk size (in bytes), but only if the
+             original uncompressed chunk size is smaller than the new
+             value. The chunk shape will only be changed along the
+             leading dimension of the data (which is usually the time
+             axis). By default the data variable is not rechunked.
 
-    -h|--help       Display this help and exit.
+    -h       Display this help and exit.
 
-    -o|--overwrite  Overwrite each original file with its repacked
-                    version, if the repacking was successful. By
-                    default, a new file with the suffix '_cmip7repack'
-                    is created for each input file.
+    -o       Overwrite each original file with its repacked version,
+             if the repacking was successful. By default, a new file
+             with the suffix '_cmip7repack' is created for each input
+             file.
 
-    -v|--version    Print version number and exit.
+    -v       Print version number and exit.
 
-    -x|--dry-run    Do a dry run: Show the repacking command for each
-                    file, but do not run it.
+    -x       Do a dry run. Show the repacking command for each
+             file, but do not run it.
 
-    -z|--gzip n     Specify the deflate compression level (between 1
-                    and 9, default 4) for rechunked data variables.
+    -z n     Specify the deflate compression level (between 1 and 9,
+             default 4) for rechunked variables.
+
+EXAMPLES
+    Repack a file, replacing the original file with its repacked
+    version:
+
+    $ cmip7repack -o file.nc
+    cmip7repack: Version 0.1 at /bin/cmip7repack
+    cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
+    
+    cmip7repack: date-time: Wed 17 Sep 08:37:14 BST 2025
+    cmip7repack: preparing to repack 'file.nc'
+    cmip7repack: repack command: kh5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
+    cmip7repack: running repack command (may take some time ...)
+    cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
+    cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
+    
+    cmip7repack: Total of 1 files repacked in 13 seconds
+    $
 
 AUTHOR
     Written by David Hassell and Ezequiel Cimadevilla.
+
+REPORTING BUGS
+    Report any bugs to
+    <https://github.com/davidhassell/cmip7repack/issues>
 
 COPYRIGHT
     Copyright © 2025 License BSD 3-Clause
     <https://opensource.org/license/bsd-3-clause>. This is free
     software: you are free to change and redistribute it. There is NO
     WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+    h5repack(1)
 
 EOF
     exit 0
@@ -77,8 +103,9 @@ EOF
 # --------------------------------------------------------------------
 # Parse command line options
 # --------------------------------------------------------------------
-if [ $# -eq 0 ] ; then
-    helpFunction
+if [ $# -eq 0 ]; then
+    echo $usage
+    exit 1
 fi
 
 # Defaults
@@ -88,23 +115,38 @@ version=false
 overwrite=false
 dry_run=false
 
-while getopts ":d:hovxz:" opt; do
+while getopts ":d:hovxz:" opt
+do
   case $opt in
-    d) size=$OPTARG ;;
+    d) size=$OPTARG 
+       echo $size | grep -q "^[0-9][0-9]*$" 
+       if [ $? -ne 0 ]; then
+	   echo "Option -d requires a numerical argument" >&2
+	   echo "$usage" >&2
+	   exit 2
+       fi ;;
     h) helpFunction ;;
     o) overwrite=true ;;
     v) version=true ;;
     x) dry_run=true ;;
-    z) gzip=$OPTARG ;;
-    \?) echo "Invalid option: -$OPTARG" >&2; helpFunction ;;
-    :)  echo "Option -$OPTARG requires an argument." >&2; helpFunction ;;
+    z) gzip=$OPTARG
+       echo $gzip | grep -q "^[1-9]$" 
+       if [ $? -ne 0 ]; then
+	   echo "Option -z requires a numerical argument between 1 and 9" >&2
+	   echo "$usage" >&2
+	   exit 2
+       fi ;;
+    \?) echo -e "Invalid option: -$OPTARG\n$usage" >&2
+	exit 2 ;;
+    :)  echo "Option -$OPTARG requires an argument" >&2
+	echo "$usage" >&2
+	exit 2 ;;
   esac
 done
 shift $((OPTIND -1))
 
 echo "$iam: Version $vn at $iam_path"
-if [ "$version" = true ]
-then
+if [ "$version" = true ]; then
     exit 0
 fi
 
@@ -112,25 +154,22 @@ fi
 # Check that the HDF5 commands are available
 # --------------------------------------------------------------------
 h5repack_path=$(which h5repack)
-if [ $? -ne 0 ]
-then
-    echo "$iam: ERROR: Must install h5repack to use $iam (it is usually installed as part of the netCDF library)"
-    exit 2
+if [ $? -ne 0 ]; then
+    echo "$iam: ERROR: Must install h5repack to use $iam"
+    exit 3
 fi
 echo "$iam: $(h5repack -V) at $h5repack_path"
 
 h5stat_path=$(which h5stat)
-if [ $? -ne 0 ]
-then
-    echo "$iam: ERROR: Must install h5stat to use $iam (it is usually installed as part of the netCDF library)"
-    exit 2
+if [ $? -ne 0 ]; then
+    echo "$iam: ERROR: Must install h5stat to use $iam"
+    exit 3
 fi
 
 h5dump_path=$(which h5dump)
-if [ $? -ne 0 ]
-then
-    echo "$iam: ERROR: Must install h5dump to use $iam (it is usually installed as part of the netCDF library)"
-    exit 2
+if [ $? -ne 0 ]; then
+    echo "$iam: ERROR: Must install h5dump to use $iam"
+    exit 3
 fi
 
 
@@ -143,7 +182,7 @@ for file in $@
 do
     echo ""
     echo "$iam: date-time: $(date)"
-    echo "$iam: preparing to repack $file"
+    echo "$iam: preparing to repack '$file'"
 
     # ----------------------------------------------------------------
     # Get the h5repack --metadata_block_size option
@@ -157,8 +196,7 @@ do
     # ----------------------------------------------------------------
     metadata=$(h5stat -S $file \
 		   | sed -n -E 's/^[[:space:]]*File metadata:[[:space:]]*([0-9]+).*/\1/p')
-    if [ "$metadata" != "" ]
-    then
+    if [ "$metadata" != "" ]; then
 	metadata="--metadata_block_size=$metadata"
     fi
     
@@ -183,8 +221,7 @@ do
 	CHUNK=$(h5dump --dataset ${variable} --header $file 2>/dev/null \
 		    | grep "DATASPACE  SIMPLE" -m 1 \
 		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
-	if [ "$CHUNK" != "" ]
-	then
+	if [ "$CHUNK" != "" ]; then
 	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
 	fi
     done
@@ -198,21 +235,18 @@ do
     #   -l /uas:CHUNK=50x143x144 -f /uas:GZIP=4
     # ----------------------------------------------------------------
     data=""
-    if [ "$size" != false ]
-    then
+    if [ "$size" != false ]; then
         # Find the data variable name
         variable=$(h5dump --attribute variable_id $file 2>/dev/null \
     		       | grep "(0)" -m 1 \
     		       | sed -n 's/.*"\(\w*\)"/\1/p')
         
-        if [ "$variable" != "" ]
-        then
+        if [ "$variable" != "" ]; then
             # Find number of bytes per word in the data
 	    variable="/$variable"
             datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
         		   | grep "DATATYPE" -m 1)
-            if [ "$(echo $datatype | grep 32)" != "" ]
-            then
+            if [ "$(echo $datatype | grep 32)" != "" ]; then
                 wordsize=4
             else
                 wordsize=8
@@ -229,7 +263,9 @@ do
 	    # Number of data dimensions
 	    ndim=${#chunks[@]}
 	    
-	    # Iteratively change the chunk size of first (0) dimension
+	    # Iteratively reduce the size of first chunk dimension, so
+	    # that the final chunk size is less than or equal to the
+	    # given size.
 	    chunks[0]=$(( $size / $wordsize ))
 	    n=1
 	    while [ $n -lt $ndim ]
@@ -237,10 +273,10 @@ do
 		chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
 		n=$(( $n + 1 ))
 	    done
-	    
+
+	    # Create an h5repack CHUNK value
 	    CHUNK=${chunks[0]}
-	    if [ $CHUNK -eq 0 ]
-	    then
+	    if [ $CHUNK -eq 0 ]; then
 		CHUNK=""
 	    else
 		n=1
@@ -252,14 +288,12 @@ do
 	    fi
 	fi
 	
-        if [ "$CHUNK" != "" ]
-	then
+        if [ "$CHUNK" != "" ]; then
 	    data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
 	fi	
     fi
     
-    if [ "$metadata$time$data" = "" ]
-    then
+    if [ "$metadata$time$data" = "" ]; then
         echo "$iam: can't repack $file: Couldn't find /time, /time_bounds or data variables, nor the metadata block size"
         echo "$iam: file $file is unchanged"	
         continue	    
@@ -269,8 +303,7 @@ do
     repacked_file=${file}_cmip7repack
     command="h5repack $metadata $time $data $file $repacked_file"
     echo "$iam: repack command: $command"
-    if [ "$dry_run" = true ]
-    then
+    if [ "$dry_run" = true ]; then
         echo "$iam: dry-run: not repacking"
 	continue
     fi
@@ -279,14 +312,12 @@ do
     echo "$iam: running repack command (may take some time ...)"
     start_time=`date +%s`
     h5repack $metadata $time $data $file $repacked_file
-    if [ $? -eq 0 ]
-    then	
+    if [ $? -eq 0 ]; then	
 	# Successfully repacked
 	end_time=`date +%s`
         N=$(( $N + 1 ))
-        echo "$iam: successfully created repacked file $repacked_file in $(($end_time - $start_time)) seconds"
-	if [ "$overwrite" = true ]
-	then
+        echo "$iam: successfully created '$repacked_file' in $(($end_time - $start_time)) seconds"
+	if [ "$overwrite" = true ]; then
             # Overwrite original file with repacked file
             mv_output=$(mv -v $repacked_file $file)
             echo "$iam: $mv_output"
@@ -298,8 +329,7 @@ do
 done
 end0=`date +%s`    
 
-if [ "$dry_run" = false ]
-then
+if [ "$dry_run" = false ]; then
     echo ""
     echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
 fi
