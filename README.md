@@ -8,7 +8,7 @@ To install `cmip7repack`, download the shell script in this repository with that
 
 ## Usage
 
-The full list of command-line options for `cmip7repack` is:
+The full help page for `cmip7repack` is:
 
 ```
 $ cmip7repack -h
