@@ -5,13 +5,19 @@ repacked version, using both HDF5-C and pure-Python pyfive backends.
 import time
 import fsspec, pyfive, h5netcdf
 
+storage_options = {
+    'default_fill_cache': False,
+    'default_cache_type':"readahead",
+    'default_block_size': 1 * (2**20)
+}
+fs = fsspec.filesystem("https", **storage_options)
 fs = fsspec.filesystem("https")
 
 # Repacked file
-repacked = fs.open("https://gws-access.jasmin.ac.uk/public/canari/uas_3hr_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_187001010300-197001010000.nc_cmip7repack")
+repacked = fs.open("https://gws-access.jasmin.ac.uk/public/canari/uas_3hr_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_187001010300-197001010000.nc_cmip7repack", 'rb', cache_type='readahead')
 
 # Original file
-original = fs.open("https://gws-access.jasmin.ac.uk/public/canari/uas_3hr_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_187001010300-197001010000.nc")
+original = fs.open("https://gws-access.jasmin.ac.uk/public/canari/uas_3hr_IPSL-CM6A-LR_piControl_r1i1p1f1_gr_187001010300-197001010000.nc", 'rb', cache_type='readahead', block_size=42* 2**20)
 
 #---------------------------------------------------------------------
 # Repacked file

@@ -111,13 +111,15 @@ fi
 # Defaults
 gzip=4
 size=false
+btree_only=false
 version=false
 overwrite=false
 dry_run=false
 
-while getopts ":d:hovxz:" opt
+while getopts ":bd:hotvxz:" opt
 do
   case $opt in
+    b) btree_only=true ;;
     d) size=$OPTARG 
        echo $size | grep -q "^[0-9][0-9]*$" 
        if [ $? -ne 0 ]; then
@@ -216,15 +218,17 @@ do
     #     -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4
     # ----------------------------------------------------------------
     time=""
-    for variable in "/time" "/time_bounds"
-    do
-	CHUNK=$(h5dump --dataset ${variable} --header $file 2>/dev/null \
-		    | grep "DATASPACE  SIMPLE" -m 1 \
-		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
-	if [ "$CHUNK" != "" ]; then
-	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
-	fi
-    done
+    if [ "$btree_only" = "false" ]; then
+        for variable in "/time" "/time_bounds"
+        do
+    	    CHUNK=$(h5dump --dataset ${variable} --header $file 2>/dev/null \
+    			| grep "DATASPACE  SIMPLE" -m 1 \
+    			| sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
+    	    if [ "$CHUNK" != "" ]; then
+    		time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
+    	    fi
+        done
+    fi
     
     # ----------------------------------------------------------------
     # Get the h5repack -l and -f options for the data variable
@@ -235,7 +239,7 @@ do
     #   -l /uas:CHUNK=50x143x144 -f /uas:GZIP=4
     # ----------------------------------------------------------------
     data=""
-    if [ "$size" != false ]; then
+    if  [ "$btree_only" = "false" ] && [ "$size" != false ]; then
         # Find the data variable name
         variable=$(h5dump --attribute variable_id $file 2>/dev/null \
     		       | grep "(0)" -m 1 \
