@@ -197,7 +197,7 @@ do
     metadata=$(h5stat -S $file \
 		   | sed -n -E 's/^[[:space:]]*File metadata:[[:space:]]*([0-9]+).*/\1/p')
     if [ "$metadata" != "" ]; then
-	metadata="--metadata_block_size=$metadata"
+        metadata="--metadata_block_size=$metadata"
     fi
     
     # ----------------------------------------------------------------
@@ -286,7 +286,7 @@ do
                     n=$(( $n + 1 ))
                 done
             fi
-	fi
+        fi
 	
         if [ "$CHUNK" != "" ]; then
             data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
