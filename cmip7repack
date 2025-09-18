@@ -243,7 +243,7 @@ do
         
         if [ "$variable" != "" ]; then
             # Find number of bytes per word in the data
-	    variable="/$variable"
+            variable="/$variable"
             datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
         		   | grep "DATATYPE" -m 1)
             if [ "$(echo $datatype | grep 32)" != "" ]; then
@@ -260,32 +260,32 @@ do
     			 | sed 's/,\s*/ /g')     
     	    chunks=($chunks)
 	    
-	    # Number of data dimensions
-	    ndim=${#chunks[@]}
-	    
-	    # Iteratively reduce the size of first chunk dimension, so
-	    # that the final chunk size is less than or equal to the
-	    # given size.
-	    chunks[0]=$(( $size / $wordsize ))
-	    n=1
-	    while [ $n -lt $ndim ]
-	    do
+            # Number of data dimensions
+            ndim=${#chunks[@]}
+            
+            # Iteratively reduce the size of first chunk dimension, so
+            # that the final chunk size is less than or equal to the
+            # given size.
+            chunks[0]=$(( $size / $wordsize ))
+            n=1
+            while [ $n -lt $ndim ]
+            do
                 chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
                 n=$(( $n + 1 ))
-	    done
-
-	    # Create an h5repack CHUNK value
-	    CHUNK=${chunks[0]}
-	    if [ $CHUNK -eq 0 ]; then
+            done
+            
+            # Create an h5repack CHUNK value
+            CHUNK=${chunks[0]}
+            if [ $CHUNK -eq 0 ]; then
                 CHUNK=""
-	    else
+            else
                 n=1
                 while [ $n -lt $ndim ]
                 do
                     CHUNK=${CHUNK}x${chunks[$n]}
                     n=$(( $n + 1 ))
                 done
-	    fi
+            fi
 	fi
 	
         if [ "$CHUNK" != "" ]; then
