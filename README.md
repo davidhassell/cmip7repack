@@ -21,18 +21,18 @@ SYNOPSIS
 DESCRIPTION
     For each netCDF-4 FILE, cmip7repack will
 
-    1) Collate all of the B-trees to a contiguous block at the start
-       of the file.
+    * Collate all of the B-trees to a contiguous block at the start of
+      the file.
 
-    2) Rechunk the time coordinate variable, if it exists, to have a
-       single compressed chunk.
+    * Rechunk the time coordinate variable, if it exists, to have a
+      single compressed chunk.
 
-    3) Rechunk the time_bounds coordinate variable, if it exists, to
-       have a single compressed chunk.
+    * Rechunk the time_bounds coordinate variable, if it exists, to
+      have a single compressed chunk.
 
-    4) Optionally rechunk the leading axis of the data variable to a
-       given chunk size, but only if the original chunk size is
-       smaller than the new value.
+    * OPTIONAL. Rechunk the leading axis of the data variable to a
+      given chunk size if the new size is larger than the original
+      data variable chunk size.
 
     -d size  Also rechunk the data variable to have the given
              uncompressed chunk size (in bytes), but only if the
@@ -66,7 +66,7 @@ EXAMPLES
     
     cmip7repack: date-time: Wed 17 Sep 08:37:14 BST 2025
     cmip7repack: preparing to repack 'file.nc'
-    cmip7repack: repack command: kh5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
+    cmip7repack: repack command: h5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
     cmip7repack: running repack command (may take some time ...)
     cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
     cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
