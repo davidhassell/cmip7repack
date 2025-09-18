@@ -117,31 +117,31 @@ dry_run=false
 
 while getopts ":d:hotvxz:" opt
 do
-  case $opt in
-    d) size=$OPTARG 
-       echo $size | grep -q "^[0-9][0-9]*$" 
-       if [ $? -ne 0 ]; then
-	   echo "Option -d requires a numerical argument" >&2
-	   echo "$usage" >&2
-	   exit 2
-       fi ;;
-    h) helpFunction ;;
-    o) overwrite=true ;;
-    v) version=true ;;
-    x) dry_run=true ;;
-    z) gzip=$OPTARG
-       echo $gzip | grep -q "^[1-9]$" 
-       if [ $? -ne 0 ]; then
-	   echo "Option -z requires a numerical argument between 1 and 9" >&2
-	   echo "$usage" >&2
-	   exit 2
-       fi ;;
-    \?) echo -e "Invalid option: -$OPTARG\n$usage" >&2
-	exit 2 ;;
-    :)  echo "Option -$OPTARG requires an argument" >&2
-	echo "$usage" >&2
-	exit 2 ;;
-  esac
+    case $opt in
+      d) size=$OPTARG 
+         echo $size | grep -q "^[0-9][0-9]*$" 
+         if [ $? -ne 0 ]; then
+             echo "Option -d requires a numerical argument" >&2
+             echo "$usage" >&2
+             exit 2
+         fi ;;
+      h) helpFunction ;;
+      o) overwrite=true ;;
+      v) version=true ;;
+      x) dry_run=true ;;
+      z) gzip=$OPTARG
+         echo $gzip | grep -q "^[1-9]$" 
+         if [ $? -ne 0 ]; then
+             echo "Option -z requires a numerical argument between 1 and 9" >&2
+             echo "$usage" >&2
+             exit 2
+         fi ;;
+      \?) echo -e "Invalid option: -$OPTARG\n$usage" >&2
+          exit 2 ;;
+      :)  echo "Option -$OPTARG requires an argument" >&2
+          echo "$usage" >&2
+          exit 2 ;;
+    esac
 done
 shift $((OPTIND -1))
 
@@ -270,27 +270,27 @@ do
 	    n=1
 	    while [ $n -lt $ndim ]
 	    do
-		chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
-		n=$(( $n + 1 ))
+                chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
+                n=$(( $n + 1 ))
 	    done
 
 	    # Create an h5repack CHUNK value
 	    CHUNK=${chunks[0]}
 	    if [ $CHUNK -eq 0 ]; then
-		CHUNK=""
+                CHUNK=""
 	    else
-		n=1
-		while [ $n -lt $ndim ]
-		do
-		    CHUNK=${CHUNK}x${chunks[$n]}
-		    n=$(( $n + 1 ))
-		done
+                n=1
+                while [ $n -lt $ndim ]
+                do
+                    CHUNK=${CHUNK}x${chunks[$n]}
+                    n=$(( $n + 1 ))
+                done
 	    fi
 	fi
 	
         if [ "$CHUNK" != "" ]; then
-	    data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
-	fi	
+            data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
+        fi	
     fi
     
     if [ "$metadata$time$data" = "" ]; then
@@ -305,7 +305,7 @@ do
     echo "$iam: repack command: $command"
     if [ "$dry_run" = true ]; then
         echo "$iam: dry-run: not repacking"
-	continue
+        continue
     fi
     
     # Still here? Run the repacking command
@@ -313,15 +313,15 @@ do
     start_time=`date +%s`
     h5repack $metadata $time $data $file $repacked_file
     if [ $? -eq 0 ]; then	
-	# Successfully repacked
-	end_time=`date +%s`
+        # Successfully repacked
+        end_time=`date +%s`
         N=$(( $N + 1 ))
         echo "$iam: successfully created '$repacked_file' in $(($end_time - $start_time)) seconds"
-	if [ "$overwrite" = true ]; then
+        if [ "$overwrite" = true ]; then
             # Overwrite original file with repacked file
             mv_output=$(mv -v $repacked_file $file)
             echo "$iam: $mv_output"
-	fi
+        fi
     else
         echo "$iam: FAILED to repack $file"
         echo "$iam: file $file is unchanged"
