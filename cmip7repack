@@ -199,6 +199,31 @@ do
     if [ "$metadata" != "" ]; then
         metadata="--metadata_block_size=$metadata"
     fi
+
+    # ----------------------------------------------------------------
+    # Get the time bounds variable using CF bounds attribute.
+    #
+    # For instance:
+    #
+    #   From h5dump output:
+    #       ATTRIBUTE "bounds" {
+    #          DATATYPE  H5T_STRING {
+    #             STRSIZE 10;
+    #             STRPAD H5T_STR_NULLTERM;
+    #             CSET H5T_CSET_ASCII;
+    #             CTYPE H5T_C_S1;
+    #          }
+    #          DATASPACE  SCALAR
+    #          DATA {
+    #          (0): "time_bnds"
+    #          }
+    #       }
+    #
+    #   get:
+    #     time_bnds
+    # ----------------------------------------------------------------
+    bounds=$(h5dump -A -d time $file | awk '$1=="ATTRIBUTE" && $2=="\"bounds\""{bnds=1}bnds && $1=="(0):"{v=$NF; gsub("\"", "", v); bnds=0}END{print v}')
+    bounds="/${bounds}"
     
     # ----------------------------------------------------------------
     # Get the h5repack -l and -f options for the time variables
@@ -216,7 +241,7 @@ do
     #     -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4
     # ----------------------------------------------------------------
     time=""
-    for variable in "/time" "/time_bounds"
+    for variable in "/time" "${bounds}"
     do
     	CHUNK=$(h5dump --dataset ${variable} --header $file 2>/dev/null \
     		    | grep "DATASPACE  SIMPLE" -m 1 \
