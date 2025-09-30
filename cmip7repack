@@ -269,47 +269,66 @@ do
         if [ "$variable" != "" ]; then
             # Find number of bytes per word in the data
             variable="/$variable"
-            datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
-        		   | grep "DATATYPE" -m 1)
-            if [ "$(echo $datatype | grep 32)" != "" ]; then
-                wordsize=4
-            else
-                wordsize=8
-            fi
     	    
     	    # Find the chunk shape
     	    CHUNK=""
     	    chunks=$(h5dump --dataset ${variable} --properties --header $file 2>/dev/null \
     			 | grep "CHUNKED (" -m 1 \
     			 | sed -n 's/.*(\(.*\)).*/\1/p' \
-    			 | sed 's/,\s*/ /g')     
+    			 | sed 's/,\s*/ /g')
     	    chunks=($chunks)
-	    
-            # Number of data dimensions
-            ndim=${#chunks[@]}
-            
-            # Iteratively reduce the size of first chunk dimension, so
-            # that the final chunk size is less than or equal to the
-            # given size.
-            chunks[0]=$(( $size / $wordsize ))
-            n=1
-            while [ $n -lt $ndim ]
-            do
-                chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
-                n=$(( $n + 1 ))
-            done
-            
-            # Create an h5repack CHUNK value
-            CHUNK=${chunks[0]}
-            if [ $CHUNK -eq 0 ]; then
-                CHUNK=""
-            else
+
+	    # Attempt to define a new data variable chunk shape, but
+	    # only if the leading element of the existing chunk shape
+	    # is 1.
+	    #
+            # For instance:
+            #
+	    #       1 144 192 -> attempt to rechunk
+	    #      37 144 192 -> do not attempt to rechunk
+	    if [ "${chunks[0]}" -eq 1 ]; then
+                # Number of data dimensions
+                ndim=${#chunks[@]}
+
+                # Find the word size, in bytes, of the data values.
+		datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
+                                 | grep "DATATYPE" -m 1)
+		if [ "$(echo $datatype | grep 32)" != "" ]; then
+                    wordsize=4
+		else
+                    wordsize=8
+		fi
+
+                # Iteratively reduce the size of first chunk dimension, so
+                # that the final chunk size is less than or equal to the
+                # given size.
+                chunks[0]=$(( $size / $wordsize ))
                 n=1
                 while [ $n -lt $ndim ]
                 do
-                    CHUNK=${CHUNK}x${chunks[$n]}
+                    chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
                     n=$(( $n + 1 ))
                 done
+                
+                # Create an h5repack CHUNK value for the data variable
+                CHUNK=${chunks[0]}
+		echo ${chunks[@]}
+                if [ $CHUNK -le 1 ]; then
+		    # No need to rechunk if the leading chunk-shape
+		    # element is now 0 or 1
+                    CHUNK=""
+                else
+		    # Leading chunk-shape element is now > 1, so we
+		    # can define a new chunk shape.
+                    n=1
+                    while [ $n -lt $ndim ]
+                    do
+                        CHUNK=${CHUNK}x${chunks[$n]}
+                        n=$(( $n + 1 ))
+                    done
+                fi
+            else
+                echo "$iam: not rechunking data variable $variable with existing chunk shape (${chunks[@]})"
             fi
         fi
 	
@@ -319,7 +338,7 @@ do
     fi
     
     if [ "$metadata$time$data" = "" ]; then
-        echo "$iam: can't repack $file: Couldn't find /time, /time_bounds or data variables, nor the metadata block size"
+        echo "$iam: can't repack $file: Couldn't find time, time bounds or data variables, nor the metadata block size"
         echo "$iam: file $file is unchanged"	
         continue	    
     fi
