@@ -27,8 +27,8 @@ SYNOPSIS
 DESCRIPTION
     For each netCDF-4 FILE, $iam will
 
-    * Collate all of the B-trees to a contiguous block at the start of
-      the file.
+    * Collate all of the internal file metadata to a contiguous block
+      at the start of the file.
 
     * Rechunk the time coordinate variable, if it exists, to have a
       single compressed chunk.
@@ -36,16 +36,19 @@ DESCRIPTION
     * Rechunk the time_bounds coordinate variable, if it exists, to
       have a single compressed chunk.
 
-    * OPTIONAL. Rechunk the leading axis of the data variable to a
-      given chunk size if the new size is larger than the original
-      data variable chunk size.
+    * OPTIONAL. Rechunk the data variable to have a given uncompressed
+      chunk size.
 
-    -d size  Also rechunk the data variable to have the given
-             uncompressed chunk size (in bytes), but only if the
-             original uncompressed chunk size is smaller than the new
-             value. The chunk shape will only be changed along the
-             leading dimension of the data (which is usually the time
-             axis). By default the data variable is not rechunked.
+    -d size  Rechunk the data variable (the variable named by the
+             variable_id global attribute) to have the given
+             uncompressed chunk size (in bytes). The chunk shape will
+             only be changed along the leading dimension of the data
+             variable (which is usually the time axis), and only if a)
+             the original uncompressed chunk size is smaller than the
+             new value, and b) the original number of chunk elements
+             along the leading dimension is 1. If either of these
+             conditions is not met then the data variable will not be
+             rechunked.
 
     -h       Display this help and exit.
 
