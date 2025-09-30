@@ -42,7 +42,8 @@ DESCRIPTION
              new value, and b) the original number of chunk elements
              along the leading dimension is 1. If either of these
              conditions is not met then the data variable will not be
-             rechunked.
+             rechunked. Rechunked data is de-interlaced with the HDF5
+             shuffle filter and compressed with zlib level 4.
 
     -h       Display this help and exit.
 
