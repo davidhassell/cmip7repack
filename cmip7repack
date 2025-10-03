@@ -6,7 +6,7 @@
 #
 # ====================================================================
 vn=0.2
-release_date="2025-10-03"
+date="2025-10-03"
 
 iam=$0
 iam_path=$(which $iam)
@@ -17,90 +17,120 @@ usage="USAGE: $synopsis"
 
 helpFunction()
 {
-    cat << EOF
-NAME
-    $iam - repack CMIP7 netCDF-4 datasets
+    (
+	cat << EOF
+.TH $iam 1 $vn $date $iam
+.
+.SH NAME
+.
+$iam - repack CMIP7 netCDF-4 datasets
+.
+.
+.
+.SH SYNOPSIS
+.
+$synopsis
+.
+.
+.
+.SH DESCRIPTION
+.
+For each netCDF-4 FILE, $iam will
 
-SYNOPSIS
-    $synopsis
+- Collate all of the internal file metadata to a contiguous block at
+  the start of the file.
 
-DESCRIPTION
-    For each netCDF-4 FILE, $iam will
+- Rechunk the time coordinate variable, if it exists, to have a single
+  compressed chunk.
 
-    * Collate all of the internal file metadata to a contiguous block
-      at the start of the file.
+- Rechunk the time_bounds coordinate variable, if it exists, to have a
+  single compressed chunk.
 
-    * Rechunk the time coordinate variable, if it exists, to have a
-      single compressed chunk.
+- OPTIONAL. Rechunk the data variable to have a given uncompressed
+  chunk size.
+.
+.
+.
+.SH OPTIONS
+.
+.TP
+.B -d size
+Rechunk the data variable (the variable named by the variable_id
+global attribute) to have the given uncompressed chunk size (in
+bytes). The chunk shape will only be changed along the leading
+dimension of the data variable (which is usually the time axis), and
+only if a) the original uncompressed chunk size is smaller than the
+new value, and b) the original number of chunk elements along the
+leading dimension is 1. If either of these conditions is not met then
+the data variable will not be rechunked. Rechunked data is
+de-interlaced with the HDF5 shuffle filter and compressed with zlib
+level 4.
+.
+.TP
+.B -h
+Display this help and exit.
+.
+.TP
+.B -o
+Overwrite each original file with its repacked version, if the
+repacking was successful. By default, a new file with the suffix
+'_cmip7repack' is created for each input file.
+.
+.TP
+.B -v
+Print version number and exit.
+.
+.TP
+.B -x
+Do a dry run. Show the repacking command for each file, but do not run
+it.
+.
+.TP
+.B -z n
+Specify the deflate compression level (between 1 and 9, default 4) for
+rechunked variables.
+.
+.
+.
+.SH EXAMPLES
 
-    * Rechunk the time_bounds coordinate variable, if it exists, to
-      have a single compressed chunk.
+Repack a file, replacing the original file with its repacked version:
 
-    * OPTIONAL. Rechunk the data variable to have a given uncompressed
-      chunk size.
+  $ cmip7repack -o file.nc
+  cmip7repack: Version 0.2 at /bin/cmip7repack
+  cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
 
-    -d size  Rechunk the data variable (the variable named by the
-             variable_id global attribute) to have the given
-             uncompressed chunk size (in bytes). The chunk shape will
-             only be changed along the leading dimension of the data
-             variable (which is usually the time axis), and only if a)
-             the original uncompressed chunk size is smaller than the
-             new value, and b) the original number of chunk elements
-             along the leading dimension is 1. If either of these
-             conditions is not met then the data variable will not be
-             rechunked. Rechunked data is de-interlaced with the HDF5
-             shuffle filter and compressed with zlib level 4.
+  cmip7repack: date-time: Fri  3 Oct 09:56:03 BST 2025
+  cmip7repack: preparing to repack 'file.nc'
+  cmip7repack: repack command: h5repack --metadata_block_size=877832  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=6000 -f /time_bounds:SHUF -f /time_bounds:GZIP=4 -f /time_bounds:FLET -l /time_bounds:CHUNK=6000x2 file.nc file.nc_cmip7repack
+  cmip7repack: running repack command (may take some time ...)
+  cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
 
-    -h       Display this help and exit.
-
-    -o       Overwrite each original file with its repacked version,
-             if the repacking was successful. By default, a new file
-             with the suffix '_cmip7repack' is created for each input
-             file.
-
-    -v       Print version number and exit.
-
-    -x       Do a dry run. Show the repacking command for each
-             file, but do not run it.
-
-    -z n     Specify the deflate compression level (between 1 and 9,
-             default 4) for rechunked variables.
-
-EXAMPLES
-    Repack a file, replacing the original file with its repacked
-    version:
-
-    $ cmip7repack -o file.nc
-    cmip7repack: Version 0.1 at /bin/cmip7repack
-    cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
-    
-    cmip7repack: date-time: Wed 17 Sep 08:37:14 BST 2025
-    cmip7repack: preparing to repack 'file.nc'
-    cmip7repack: repack command: h5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
-    cmip7repack: running repack command (may take some time ...)
-    cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
-    cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
-    
-    cmip7repack: Total of 1 files repacked in 13 seconds
-    $
-
-AUTHOR
-    Written by David Hassell and Ezequiel Cimadevilla.
-
-REPORTING BUGS
-    Report any bugs to
-    <https://github.com/davidhassell/cmip7repack/issues>
-
-COPYRIGHT
-    Copyright © 2025 License BSD 3-Clause
-    <https://opensource.org/license/bsd-3-clause>. This is free
-    software: you are free to change and redistribute it. There is NO
-    WARRANTY, to the extent permitted by law.
-
-SEE ALSO
-    h5repack(1)
-
+  cmip7repack: Total of 1 files (297046606 bytes) repacked in 13 seconds (22849738 B/s) to total size 296728324 bytes (0% smaller than input files)
+  $
+.
+.
+.SH AUTHOR
+Written by David Hassell and Ezequiel Cimadevilla.
+.
+.
+.SH REPORTING BUGS
+Report any bugs to
+<https://github.com/davidhassell/cmip7repack/issues>
+.
+.
+.SH COPYRIGHT
+Copyright © 2025 License BSD 3-Clause
+<https://opensource.org/license/bsd-3-clause>. This is free software:
+you are free to change and redistribute it. There is NO WARRANTY, to
+the extent permitted by law.
+.
+.
+.SH SEE ALSO
+h5repack(1)
 EOF
+    ) | man -r "Manual page $iam(1) ?ltline %lt?L/%L.:" -l - 
+	  
     exit 0
 }
 
