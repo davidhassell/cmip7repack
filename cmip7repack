@@ -175,7 +175,6 @@ if [ $? -ne 0 ]; then
     exit 3
 fi
 
-
 # --------------------------------------------------------------------
 # Loop over input files
 # --------------------------------------------------------------------
@@ -250,31 +249,30 @@ do
     		    | grep "DATASPACE  SIMPLE" -m 1 \
     		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
     	if [ "$CHUNK" != "" ]; then
-    	    time="$time -l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
+	    time="$time -f ${variable}:SHUF -f ${variable}:GZIP=$gzip -f ${variable}:FLET"
+    	    time="$time -l ${variable}:CHUNK=$CHUNK"
     	fi
     done
     
     # ----------------------------------------------------------------
-    # Get the h5repack -l and -f options for the data variable
-    # (optional)
+    # Get the h5repack -l and -f options for the data variable.
     #
     # For instance:
     #
-    #   -l /uas:CHUNK=50x143x144 -f /uas:GZIP=4
+    #   -l /uas:CHUNK=50x143x144 -f /uas:SHUF -f /uas:GZIP=4 -f /uas:FLET
     # ----------------------------------------------------------------
     data=""
     if [ "$size" != false ]; then
         # Find the data variable name
         variable=$(h5dump --attribute variable_id $file 2>/dev/null \
-    		       | grep "(0)" -m 1 \
-    		       | sed -n 's/.*"\(\w*\)"/\1/p')
-        
+                       | grep "(0)" -m 1 \
+                       | sed -n 's/.*"\(\w*\)"/\1/p')
+
         if [ "$variable" != "" ]; then
-            # Find number of bytes per word in the data
             variable="/$variable"
-    	    
-    	    # Find the chunk shape
-    	    CHUNK=""
+
+            # Find the chunk shape
+            CHUNK=""
     	    chunks=$(h5dump --dataset ${variable} --properties --header $file 2>/dev/null \
     			 | grep "CHUNKED (" -m 1 \
     			 | sed -n 's/.*(\(.*\)).*/\1/p' \
@@ -315,7 +313,6 @@ do
                 
                 # Create an h5repack CHUNK value for the data variable
                 CHUNK=${chunks[0]}
-		echo ${chunks[@]}
                 if [ $CHUNK -le 1 ]; then
 		    # No need to rechunk if the leading chunk-shape
 		    # element is now 0 or 1
@@ -336,7 +333,8 @@ do
         fi
 	
         if [ "$CHUNK" != "" ]; then
-            data="-l ${variable}:CHUNK=$CHUNK -f ${variable}:GZIP=$gzip"
+	    data="-f ${variable}:SHUF -f ${variable}:GZIP=$gzip -f ${variable}:FLET"
+            data="$data -l ${variable}:CHUNK=$CHUNK"
         fi	
     fi
     
