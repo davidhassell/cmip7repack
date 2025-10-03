@@ -11,117 +11,94 @@ To install `cmip7repack`, download the shell script in this repository with that
 The full help page for `cmip7repack` is:
 
 ```
-$ cmip7repack -h
+cmip7repack(1)             General Commands Manual            cmip7repack(1)
+
 NAME
-    cmip7repack - repack CMIP7 netCDF-4 datasets
+       cmip7repack - repack CMIP7 netCDF-4 datasets
 
 SYNOPSIS
-    cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+       cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
 
 DESCRIPTION
-    For each netCDF-4 FILE, cmip7repack will
+       For each netCDF-4 FILE, cmip7repack will
 
-    * Collate all of the internal file metadata to a contiguous block
-      at the start of the file.
+       — Collate  all of the internal file metadata to a contiguous block at
+         the start of the file.
 
-    * Rechunk the time coordinate variable, if it exists, to have a
-      single compressed chunk.
+       — Rechunk the time coordinate variable, if it exists, to have a  sin‐
+         gle compressed chunk.
 
-    * Rechunk the time_bounds coordinate variable, if it exists, to
-      have a single compressed chunk.
+       — Rechunk  the  time  bounds variable, if it exists, to have a single
+         compressed chunk.
 
-    * OPTIONAL. Rechunk the data variable to have a given uncompressed
-      chunk size.
+       — OPTIONAL. Rechunk the data variable, if it exists, to have a  given
+         uncompressed chunk size.
 
-    -d size  Rechunk the data variable (the variable named by the
-             variable_id global attribute) to have the given
-             uncompressed chunk size (in bytes). The chunk shape will
-             only be changed along the leading dimension of the data
-             variable (which is usually the time axis), and only if a)
-             the original uncompressed chunk size is smaller than the
-             new value, and b) the original number of chunk elements
-             along the leading dimension is 1. If either of these
-             conditions is not met then the data variable will not be
-             rechunked. Rechunked data is de-interlaced with the HDF5
-             shuffle filter and compressed with zlib level 4.
+       All  rechunked variables are de-interlaced with the HDF5 shuffle fil‐
+       ter (which significantly  improves  compression)  before  being  com‐
+       pressed  with  zlib (see the -z option), and also have the Fletcher32
+       HDF5 checksum algorithm activated.
 
-    -h       Display this help and exit.
+OPTIONS
+       -d size
+              Rechunk the data variable (the variable  named  by  the  vari‐
+              able_id global attribute) to have the given uncompressed chunk
+              size  (in  bytes).  The chunk shape will only be changed along
+              the leading dimension of the data variable (which  is  usually
+              the time axis), and only if A) the original uncompressed chunk
+              size is smaller than the new value, and B) the original number
+              of  chunk elements along the leading dimension is 1. If either
+              of these conditions is not met then the data variable will not
+              be rechunked.
 
-    -o       Overwrite each original file with its repacked version,
-             if the repacking was successful. By default, a new file
-             with the suffix '_cmip7repack' is created for each input
-             file.
+       -h     Display this help and exit.
 
-    -v       Print version number and exit.
+       -o     Overwrite each original file with its repacked version, if the
+              repacking was successful. By default, a new file with the suf‐
+              fix
 
-    -x       Do a dry run. Show the repacking command for each
-             file, but do not run it.
+       -v     Print version number and exit.
 
-    -z n     Specify the deflate compression level (between 1 and 9,
-             default 4) for rechunked variables.
+       -x     Do a dry run. Show the repacking command for each file, but do
+              not run it.
+
+       -z n   Specify the zlib compression level (between 1 and  9,  default
+              4) for rechunked variables.
 
 EXAMPLES
-    Repack a file, replacing the original file with its repacked
-    version:
+       Repack a file, replacing the original file with its repacked version:
 
-    $ cmip7repack -o file.nc
-    cmip7repack: Version 0.1 at /bin/cmip7repack
-    cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
-    
-    cmip7repack: date-time: Wed 17 Sep 08:37:14 BST 2025
-    cmip7repack: preparing to repack 'file.nc'
-    cmip7repack: repack command: h5repack --metadata_block_size=877832 -l /time:CHUNK=6000 -f /time:GZIP=4 -l /time_bounds:CHUNK=6000x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
-    cmip7repack: running repack command (may take some time ...)
-    cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
-    cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
-    
-    cmip7repack: Total of 1 files repacked in 13 seconds
-    $
+         $ cmip7repack -o file.nc
+         cmip7repack: Version 0.2 at /bin/cmip7repack
+         cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
 
-AUTHOR
-    Written by David Hassell and Ezequiel Cimadevilla.
+         cmip7repack: date-time: Fri  3 Oct 09:56:03 BST 2025
+         cmip7repack: preparing to repack 'file.nc'
+         cmip7repack: repack command: h5repack --metadata_block_size=877832 -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=6000 -f /time_bounds:SHUF -f /time_bounds:GZIP=4 -f /time_bounds:FLET -l /time_bounds:CHUNK=6000x2 file.nc file.nc_cmip7repack
+         cmip7repack: running repack command (may take some time ...)
+         cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
+
+         cmip7repack: Total of 1 files (297046606 bytes) repacked in 13 seconds (22849738 B/s) to total size 296728324 bytes (0% smaller than input files)
+         $
+
+EXIT STATUS
+       The  cmip7repack  utility  exits 0 on success, and >0 if an error oc‐
+       curs.
+
+AUTHORS
+       Written by David Hassell and Ezequiel Cimadevilla.
 
 REPORTING BUGS
-    Report any bugs to
-    <https://github.com/davidhassell/cmip7repack/issues>
+       Report any bugs to https://github.com/davidhassell/cmip7repack/issues
 
 COPYRIGHT
-    Copyright © 2025 License BSD 3-Clause
-    <https://opensource.org/license/bsd-3-clause>. This is free
-    software: you are free to change and redistribute it. There is NO
-    WARRANTY, to the extent permitted by law.
+       Copyright  2025  License  BSD  3-Clause   <https://opensource.org/li‐
+       cense/bsd-3-clause>.  This  is  free software: you are free to change
+       and redistribute it. There is NO WARRANTY, to the extent permitted by
+       law.
 
 SEE ALSO
-    h5repack(1)
-```
+       h5repack(1)
 
-In practice it is expected that, after initial testing, running with only the `-o|--overwrite` option will be always be acceptable:
-
-```
-$ cmip7repack -o *.nc
-```
-
-A different deflate compression level for any rechunked variables may be set with the `-z|--gzip` option:
-
-```
-$ cmip7repack -z 5 -o *.nc
-```
-
-To also rechunk the data variable, a data variable chunk size must be provided with the `-d|--data` option:
-
-```
-$ cmip7repack -d 4194304 -o *.nc
-```
-
-For those who want full control, running with he `-x|--dry-run` option (which may be used in conjunction with any other options) provides the `h5repack` command used by internally `cmip7repack`, but does not run it, thereby allowing it to be be altered in any way before being run manually:
-
-```
-$ cmip7repack -x file.nc
-cmip7repack: Version 0.1 at /bin/cmip7repack
-cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
-
-cmip7repack: start time: Mon 15 Sep 16:13:46 BST 2025
-cmip7repack: preparing to repack file.nc
-cmip7repack: repack command: h5repack --metadata_block_size=40988486 -l /time:CHUNK=292192 -f /time:GZIP=4 -l /time_bounds:CHUNK=292192x2 -f /time_bounds:GZIP=4 file.nc file.nc_cmip7repack
-cmip7repack: dry-run: not repacking
+2025-10-03                           0.2                      cmip7repack(1)
 ```
