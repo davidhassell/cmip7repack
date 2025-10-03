@@ -5,8 +5,8 @@
 # cmip7repack
 #
 # ====================================================================
-vn=0.1
-release_date="2025-09-15"
+vn=0.2
+release_date="2025-10-03"
 
 iam=$0
 iam_path=$(which $iam)
@@ -48,7 +48,8 @@ DESCRIPTION
              new value, and b) the original number of chunk elements
              along the leading dimension is 1. If either of these
              conditions is not met then the data variable will not be
-             rechunked.
+             rechunked. Rechunked data is de-interlaced with the HDF5
+             shuffle filter and compressed with zlib level 4.
 
     -h       Display this help and exit.
 
@@ -179,12 +180,25 @@ fi
 # Loop over input files
 # --------------------------------------------------------------------
 start0=`date +%s`
+totalsizein=0  # Total size of input files
+totalsizeout=0  # Total size of output files
 N=0  # Number of repacked input files
 for file in $@
 do
+    start_time=`date +%s`
+
     echo ""
     echo "$iam: date-time: $(date)"
     echo "$iam: preparing to repack '$file'"
+
+    if [ ! -e $file ]; then
+        echo "iam: file does not exist"
+        continue
+    fi
+
+    # Get the input file size
+    filesize=$(wc -c < "$file")
+    totalsizein=$(($totalsizein+$filesize))
 
     # ----------------------------------------------------------------
     # Get the h5repack --metadata_block_size option
@@ -355,13 +369,17 @@ do
     
     # Still here? Run the repacking command
     echo "$iam: running repack command (may take some time ...)"
-    start_time=`date +%s`
     h5repack $metadata $time $data $file $repacked_file
     if [ $? -eq 0 ]; then	
         # Successfully repacked
         end_time=`date +%s`
         N=$(( $N + 1 ))
         echo "$iam: successfully created '$repacked_file' in $(($end_time - $start_time)) seconds"
+
+	# Get the output file size
+	filesize=$(wc -c < "$repacked_file")
+	totalsizeout=$(($totalsizeout + $filesize))
+
         if [ "$overwrite" = true ]; then
             # Overwrite original file with repacked file
             mv_output=$(mv -v $repacked_file $file)
@@ -375,6 +393,22 @@ done
 end0=`date +%s`    
 
 if [ "$dry_run" = false ]; then
+    # Get the repack rate
+    totaltime=$(($end0 - $start0))
+    if [ $totaltime -gt 0 ]; then
+        rate="($(($totalsizein / $totaltime )) B/s)"
+    else
+        rate=""
+    fi
+
+    pcdiff=$(( (100 * ($totalsizein - $totalsizeout))/$totalsizein ))
+    if [ $pcdiff -ge 0 ]; then
+        pcdiff="(${pcdiff}% smaller than input files)"
+    else
+	pcdiff=$(($pcdiff * -1))
+        pcdiff="(${pcdiff}% larger than input files)"
+    fi
+
     echo ""
-    echo "$iam: Total of $N files repacked in $(($end0 - $start0)) seconds"
+    echo "$iam: Total of $N files ($totalsizein bytes) repacked in $totaltime seconds $rate to total size $totalsizeout bytes $pcdiff"
 fi
