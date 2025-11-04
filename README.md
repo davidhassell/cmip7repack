@@ -30,8 +30,8 @@ DESCRIPTION
        — Rechunk  the  time  bounds variable, if it exists, to have a single
          compressed chunk.
 
-       — OPTIONAL. Rechunk the data variable, if it exists, to have a  given
-         uncompressed chunk size.
+       — Rechunk the data variable, if it exists, to  have  a  given  uncom‐
+         pressed chunk size.
 
        All  rechunked variables are de-interlaced with the HDF5 shuffle fil‐
        ter (which significantly  improves  compression)  before  being  com‐
@@ -42,13 +42,12 @@ OPTIONS
        -d size
               Rechunk the data variable (the variable  named  by  the  vari‐
               able_id global attribute) to have the given uncompressed chunk
-              size  (in  bytes).  The chunk shape will only be changed along
-              the leading dimension of the data variable (which  is  usually
-              the time axis), and only if A) the original uncompressed chunk
-              size is smaller than the new value, and B) the original number
-              of  chunk elements along the leading dimension is 1. If either
-              of these conditions is not met then the data variable will not
-              be rechunked.
+              size (in bytes). If -d is unset, then the chunk size  defaults
+              to  4194304 (i.e. 4 MiB). The chunk shape will only be changed
+              along the leading dimension of the  data  variable  (which  is
+              usually the time axis). If, however, the original uncompressed
+              chunk size is smaller than the new value, then the data  vari‐
+              able will not be rechunked.
 
        -h     Display this help and exit.
 
@@ -67,18 +66,18 @@ OPTIONS
 EXAMPLES
        Repack a file, replacing the original file with its repacked version:
 
-         $ cmip7repack -o file.nc
-         cmip7repack: Version 0.2 at /bin/cmip7repack
-         cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
+       $ cmip7repack -o file.nc
+	 cmip7repack: Version 0.3 at /bin/cmip7repack
+       cmip7repack: h5repack: Version 1.14.6 at /bin/h5repack
 
-         cmip7repack: date-time: Fri  3 Oct 09:56:03 BST 2025
-         cmip7repack: preparing to repack 'file.nc'
-         cmip7repack: repack command: h5repack --metadata_block_size=877832 -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=6000 -f /time_bounds:SHUF -f /time_bounds:GZIP=4 -f /time_bounds:FLET -l /time_bounds:CHUNK=6000x2 file.nc file.nc_cmip7repack
-         cmip7repack: running repack command (may take some time ...)
-         cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
-
-         cmip7repack: Total of 1 files (297046606 bytes) repacked in 13 seconds (22849738 B/s) to total size 296728324 bytes (0% smaller than input files)
-         $
+       cmip7repack: date-time: Tue  4 Nov 14:58:28 GMT 2025
+       cmip7repack: preparing to repack 'file.nc'
+       cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+       cmip7repack: running repack command (may take some time ...)
+       cmip7repack: successfully created 'file.nc_cmip7repack' in 7 seconds
+       
+       cmip7repack: Total of 1 files (134892546 bytes) repacked in 7 seconds (19270363 B/s) to total size 94942759 bytes (29% smaller than input files)
+       $
 
 EXIT STATUS
        The  cmip7repack  utility  exits 0 on success, and >0 if an error oc‐
@@ -99,5 +98,5 @@ COPYRIGHT
 SEE ALSO
        h5repack(1)
 
-2025-10-03                           0.2                      cmip7repack(1)
+2025-11-04                           0.3                      cmip7repack(1)
 ```

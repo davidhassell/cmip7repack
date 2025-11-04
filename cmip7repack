@@ -5,8 +5,8 @@
 # cmip7repack
 #
 # ====================================================================
-vn=0.2
-release_date="2025-10-03"
+vn=0.3
+release_date="2025-11-04"
 
 iam=$0
 iam_path=$(which $iam)
@@ -46,8 +46,8 @@ Rechunk the time bounds variable, if it exists, to have a single
 compressed chunk.
 
 .IP "\\(em" 2
-OPTIONAL. Rechunk the data variable, if it exists, to have a given
-uncompressed chunk size.
+Rechunk the data variable, if it exists, to have a given uncompressed
+chunk size.
 
 .IP "" 0
 
@@ -67,12 +67,11 @@ activated.
 .B \-d size
 Rechunk the data variable (the variable named by the variable_id
 global attribute) to have the given uncompressed chunk size (in
-bytes). The chunk shape will only be changed along the leading
-dimension of the data variable (which is usually the time axis), and
-only if A) the original uncompressed chunk size is smaller than the
-new value, and B) the original number of chunk elements along the
-leading dimension is 1. If either of these conditions is not met then
-the data variable will not be rechunked.
+bytes). If -d is unset, then the chunk size defaults to 4194304
+(i.e. 4 MiB). The chunk shape will only be changed along the leading
+dimension of the data variable (which is usually the time axis). If,
+however, the original uncompressed chunk size is smaller than the new
+value, then the data variable will not be rechunked.
 
 .TP
 .B \-h
@@ -103,18 +102,18 @@ rechunked variables.
 Repack a file, replacing the original file with its repacked version:
 
 .nf
-  $ cmip7repack -o file.nc
-  cmip7repack: Version 0.2 at /bin/cmip7repack
-  cmip7repack: h5repack: Version 1.14.3 at /bin/h5repack
-  
-  cmip7repack: date-time: Fri  3 Oct 09:56:03 BST 2025
-  cmip7repack: preparing to repack 'file.nc'
-  cmip7repack: repack command: h5repack --metadata_block_size=877832 -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=6000 -f /time_bounds:SHUF -f /time_bounds:GZIP=4 -f /time_bounds:FLET -l /time_bounds:CHUNK=6000x2 file.nc file.nc_cmip7repack
-  cmip7repack: running repack command (may take some time ...)
-  cmip7repack: successfully created 'file.nc_cmip7repack' in 13 seconds
-  
-  cmip7repack: Total of 1 files (297046606 bytes) repacked in 13 seconds (22849738 B/s) to total size 296728324 bytes (0% smaller than input files)
-  $
+$ cmip7repack -o file.nc
+cmip7repack: Version 0.3 at /bin/cmip7repack
+cmip7repack: h5repack: Version 1.14.6 at /bin/h5repack
+
+cmip7repack: date-time: Tue  4 Nov 14:58:28 GMT 2025
+cmip7repack: preparing to repack 'file.nc'
+cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+cmip7repack: running repack command (may take some time ...)
+cmip7repack: successfully created 'file.nc_cmip7repack' in 7 seconds
+
+cmip7repack: Total of 1 files (134892546 bytes) repacked in 7 seconds (19270363 B/s) to total size 94942759 bytes (29% smaller than input files)
+$
 .fi
 
 . SH EXIT STATUS
@@ -149,7 +148,7 @@ fi
 
 # Defaults
 gzip=4
-size=false
+size=4194304
 version=false
 overwrite=false
 dry_run=false
@@ -157,10 +156,15 @@ dry_run=false
 while getopts ":d:hotvxz:" opt
 do
     case $opt in
-      d) size=$OPTARG 
+      d) size=$OPTARG
          echo $size | grep -q "^[0-9][0-9]*$" 
          if [ $? -ne 0 ]; then
              echo "Option -d requires a numerical argument" >&2
+             echo "$usage" >&2
+             exit 2
+         fi
+         if [ $size -lt 4194304 ]; then
+             echo "Option -d requires an argument of at least 4194304 (i.e. 4 MiB)" >&2
              echo "$usage" >&2
              exit 2
          fi ;;
@@ -298,11 +302,12 @@ do
     		    | grep "DATASPACE  SIMPLE" -m 1 \
     		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
     	if [ "$CHUNK" != "" ]; then
-	    time="$time -f ${variable}:SHUF -f ${variable}:GZIP=$gzip -f ${variable}:FLET"
-    	    time="$time -l ${variable}:CHUNK=$CHUNK"
+            time="$time -f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
+            time="$time -f ${variable}:FLET"
+            time="$time -l ${variable}:CHUNK=$CHUNK"
     	fi
     done
-    
+
     # ----------------------------------------------------------------
     # Get the h5repack -l and -f options for the data variable.
     #
@@ -327,28 +332,30 @@ do
     			 | sed -n 's/.*(\(.*\)).*/\1/p' \
     			 | sed 's/,\s*/ /g')
     	    chunks=($chunks)
+            ndim=${#chunks[@]}
 
-	    # Attempt to define a new data variable chunk shape, but
-	    # only if the leading element of the existing chunk shape
-	    # is 1.
-	    #
-            # For instance:
-            #
-	    #       1 144 192 -> attempt to rechunk
-	    #      37 144 192 -> do not attempt to rechunk
-	    if [ "${chunks[0]}" -eq 1 ]; then
-                # Number of data dimensions
-                ndim=${#chunks[@]}
+            # Find the word size, in bytes, of the data values.
+            datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
+                           | grep "DATATYPE" -m 1)
+            if [ "$(echo $datatype | grep 32)" != "" ]; then
+                wordsize=4
+            else
+                wordsize=8
+    	    fi
 
-                # Find the word size, in bytes, of the data values.
-		datatype=$(h5dump --dataset $variable --header $file 2>/dev/null \
-                                 | grep "DATATYPE" -m 1)
-		if [ "$(echo $datatype | grep 32)" != "" ]; then
-                    wordsize=4
-		else
-                    wordsize=8
-		fi
+	    # Find original chunk size in bytes
+	    original_chunk_size=$wordsize
+	    n=0
+            while [ $n -lt $ndim ]
+            do
+                original_chunk_size=$(( $original_chunk_size * ${chunks[$n]} ))
+                n=$(( $n + 1 ))
+            done
 
+	    # If the current chunks size is less than the requested
+	    # chunk size, then look for a new data variable chunk shape.
+	    CHUNK=""	    
+	    if [ $original_chunk_size -lt $size ]; then
                 # Iteratively reduce the size of first chunk dimension, so
                 # that the final chunk size is less than or equal to the
                 # given size.
@@ -359,16 +366,21 @@ do
                     chunks[0]=$(( ${chunks[0]} / ${chunks[$n]} ))
                     n=$(( $n + 1 ))
                 done
-                
-                # Create an h5repack CHUNK value for the data variable
-                CHUNK=${chunks[0]}
-                if [ $CHUNK -le 1 ]; then
-		    # No need to rechunk if the leading chunk-shape
-		    # element is now 0 or 1
-                    CHUNK=""
-                else
-		    # Leading chunk-shape element is now > 1, so we
-		    # can define a new chunk shape.
+
+		# Find the new chunk size in bytes
+		new_chunk_size=$wordsize
+		n=0
+		while [ $n -lt $ndim ]
+		do
+                    new_chunk_size=$(( $new_chunk_size * ${chunks[$n]} ))
+                    n=$(( $n + 1 ))
+		done
+
+		# Only rechunk of the new chunks size is strictly
+		# greater than the original chunks size
+		if [ $new_chunk_size -gt $original_chunk_size ]; then
+                    # Create an h5repack CHUNK value for the data variable
+                    CHUNK=${chunks[0]}
                     n=1
                     while [ $n -lt $ndim ]
                     do
@@ -376,14 +388,15 @@ do
                         n=$(( $n + 1 ))
                     done
                 fi
+	    fi
+
+	    if [ "$CHUNK" = "" ]; then
+	        echo "$iam: not rechunking data variable $variable with existing chunk shape (${chunks[@]})"
             else
-                echo "$iam: not rechunking data variable $variable with existing chunk shape (${chunks[@]})"
-            fi
-        fi
-	
-        if [ "$CHUNK" != "" ]; then
-	    data="-f ${variable}:SHUF -f ${variable}:GZIP=$gzip -f ${variable}:FLET"
-            data="$data -l ${variable}:CHUNK=$CHUNK"
+                data="-f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
+                data="$data -f ${variable}:FLET"
+                data="$data -l ${variable}:CHUNK=$CHUNK"
+	    fi
         fi	
     fi
     
