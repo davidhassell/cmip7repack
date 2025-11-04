@@ -302,12 +302,12 @@ do
     		    | grep "DATASPACE  SIMPLE" -m 1 \
     		    | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g; s/,/x/g')
     	if [ "$CHUNK" != "" ]; then
-	    time="$time -f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
-	    time="$time -f ${variable}:FLET"
-    	    time="$time -l ${variable}:CHUNK=$CHUNK"
+            time="$time -f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
+            time="$time -f ${variable}:FLET"
+            time="$time -l ${variable}:CHUNK=$CHUNK"
     	fi
     done
-    
+
     # ----------------------------------------------------------------
     # Get the h5repack -l and -f options for the data variable.
     #
@@ -387,7 +387,7 @@ do
                         CHUNK=${CHUNK}x${chunks[$n]}
                         n=$(( $n + 1 ))
                     done
-		fi
+                fi
 	    fi
 
 	    if [ "$CHUNK" = "" ]; then
