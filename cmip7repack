@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ====0.2================================================================
+# ====================================================================
 #
 # cmip7repack
 #
@@ -393,8 +393,8 @@ do
 	    if [ "$CHUNK" = "" ]; then
 	        echo "$iam: not rechunking data variable $variable with existing chunk shape (${chunks[@]})"
             else
-  	        data="-f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
-		data="$data -f ${variable}:FLET"
+                data="-f ${variable}:SHUF -f ${variable}:GZIP=$gzip"
+                data="$data -f ${variable}:FLET"
                 data="$data -l ${variable}:CHUNK=$CHUNK"
 	    fi
         fi	
