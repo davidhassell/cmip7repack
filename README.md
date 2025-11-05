@@ -9,6 +9,7 @@ To install `cmip7repack`, download the shell script in this repository with that
 ## Usage
 
 ```
+$ cmip7repack -h
 cmip7repack(1)             General Commands Manual             cmip7repack(1)
 
 NAME
@@ -83,12 +84,18 @@ EXAMPLES
 
           cmip7repack: date-time: Wed  5 Nov 12:06:25 GMT 2025
           cmip7repack: file: 'file.nc'
-          cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+          cmip7repack: repack command: h5repack --metadata_block_size=236570
+       -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800
+       -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET
+       -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET
+       -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
           cmip7repack: running repack command (may take some time ...)
           cmip7repack: successfully created 'file.nc_cmip7repack' in 5 seconds
           cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
 
-          cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94942759 bytes (29% smaller than input files)
+          cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds
+	               (26978509 B/s) to total size 94942759 bytes
+		       (29% smaller than input files)
           $
 
        2.  Repack  a  file  using the non-default data variable chunk size of
@@ -104,12 +111,18 @@ EXAMPLES
 
           cmip7repack: date-time: Wed  5 Nov 12:07:15 GMT 2025
           cmip7repack: file: 'file.nc'
-          cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=75x144x192 file.nc file.nc_cmip7repack
+          cmip7repack: repack command: h5repack --metadata_block_size=236570
+        -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800
+	-f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET
+	-l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET
+	-l /pr:CHUNK=75x144x192 file.nc file.nc_cmip7repack
           cmip7repack: running repack command (may take some time ...)
           cmip7repack: successfully created 'file.nc_cmip7repack' in 5 seconds
           cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
 
-          cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
+          cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds
+	               (26978509 B/s) to total size 94856788 bytes
+		       (29% smaller than input files)
           $
 
        3. Get the h5repack commands that would be used for repacking each in‐
@@ -121,7 +134,11 @@ EXAMPLES
 
           cmip7repack: date-time: Wed  5 Nov 12:08:02 GMT 2025
           cmip7repack: file: 'file.nc'
-          cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+          cmip7repack: repack command: h5repack --metadata_block_size=236570
+	-f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800
+	-f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET
+	-l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET
+	-l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
           cmip7repack: dry-run: not repacking
           $
 
@@ -135,19 +152,29 @@ EXAMPLES
 
           cmip7repack: date-time: Wed  5 Nov 12:09:13 GMT 2025
           cmip7repack: file: 'file1.nc'
-          cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file1.nc file1.nc_cmip7repack
+          cmip7repack: repack command: h5repack --metadata_block_size=236570
+        -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800
+	-f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET
+	-l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET
+	-l /pr:CHUNK=37x144x192 file1.nc file1.nc_cmip7repack
           cmip7repack: running repack command (may take some time ...)
           cmip7repack: successfully created 'file1.nc_cmip7repack' in 5 seconds
           cmip7repack: renamed 'file1.nc_cmip7repack' -> 'file1.nc'
 
           cmip7repack: date-time: Wed  5 Nov 12:09:18 GMT 2025
           cmip7repack: file: 'file2.nc'
-          cmip7repack: repack command: h5repack --metadata_block_size=149185  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=708 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=708x2 -f /toz:SHUF -f /toz:GZIP=4 -f /toz:FLET -l /toz:CHUNK=37x144x192 file2.nc file2.nc_cmip7repack
+          cmip7repack: repack command: h5repack --metadata_block_size=149185
+	-f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=708
+	-f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET
+	-l /time_bnds:CHUNK=708x2 -f /toz:SHUF -f /toz:GZIP=4 -f /toz:FLET
+	-l /toz:CHUNK=37x144x192 file2.nc file2.nc_cmip7repack
           cmip7repack: running repack command (may take some time ...)
           cmip7repack: successfully created 'file2.nc_cmip7repack' in 1 seconds
           cmip7repack: renamed 'file2.nc_cmip7repack' -> 'file2.nc'
 
-          cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
+          cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds
+	               (30452379 B/s) to total size 140606512 bytes
+		       (23% smaller than input files)
           $
 
        5.  If  any input files failed to repack then the exit code will be 3,
