@@ -4,6 +4,16 @@
 #
 # cmip7repack
 #
+# Written by David Hassell and Ezequiel Cimadevilla.
+# 
+# Copyright 2025 License BSD 3-Clause
+# <https://opensource.org/license/bsd-3-clause>. This is free
+# software: you are free to change and redistribute it. There is NO
+# WARRANTY, to the extent permitted by law.
+#
+# Report any bugs to
+# https://github.com/NCAS-CMS/cmip7repack/issues
+# 
 # ====================================================================
 vn=0.4
 release_date="2025-11-05"
@@ -223,7 +233,7 @@ repack all input files).
 Written by David Hassell and Ezequiel Cimadevilla.
 
 .SH REPORTING BUGS
-Report any bugs to https://github.com/davidhassell/cmip7repack/issues
+Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
 
 .SH COPYRIGHT
 Copyright 2025 License BSD 3-Clause
