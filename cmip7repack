@@ -42,16 +42,16 @@ $iam - repack CMIP7 netCDF-4 datasets
 For each netCDF-4 \fIFILE\fR, \fB$iam\fR will
 .
 .IP "\\(em" 2
-Collate all of the internal file metadata to a contiguous block at
+Collate all of the internal file metadata to a contiguous block near
 the start of the file.
 
 .IP "\\(em" 2
 Rechunk the time coordinate variable, if it exists, to have a single
-compressed chunk.
+chunk.
 
 .IP "\\(em" 2
 Rechunk the time bounds variable, if it exists, to have a single
-compressed chunk.
+chunk.
 
 .IP "\\(em" 2
 Rechunk the data variable, if it exists, to have a given uncompressed
@@ -71,7 +71,8 @@ activated.
 .SH METHOD
 
 Each input \fIFILE\fR is analysed using \fBh5stat\fR and \fBh5dump\fR,
-and then repacked using \fBh5repack\fR.
+and then repacked using \fBh5repack\fR, which changes the layout for
+objects in the new file. All attributes and data values are unchanged. 
 
 .SH OPTIONS
 
