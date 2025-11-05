@@ -39,7 +39,7 @@ DESCRIPTION
 
 METHOD
        Each input FILE is analysed using h5stat and h5dump, and then repacked
-       using **h5repack**.
+       using h5repack.
 
 OPTIONS
        -d size
