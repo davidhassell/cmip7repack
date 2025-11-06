@@ -126,7 +126,8 @@ EXAMPLES
            cmip7repack: successfully created 'file.nc_cmip7repack' in 5 seconds
            cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
 
-           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94942759 bytes (29% smaller than input files)
+           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s)
+               to total size 94942759 bytes (29% smaller than input files)
            $
 
        2.  Repack  a file using the non-default data variable chunk size of
@@ -151,7 +152,8 @@ EXAMPLES
            cmip7repack: successfully created 'file.nc_cmip7repack' in 5 seconds
            cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
 
-           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
+           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s)
+               to total size 94856788 bytes (29% smaller than input files)
            $
 
        3.  Get  the h5repack commands that would be used for repacking each
@@ -204,7 +206,8 @@ EXAMPLES
            cmip7repack: successfully created 'file2.nc_cmip7repack' in 1 seconds
            cmip7repack: renamed 'file2.nc_cmip7repack' -> 'file2.nc'
 
-           cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
+           cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s)
+               to total size 140606512 bytes (23% smaller than input files)
            $
 
 AUTHORS
