@@ -6,6 +6,16 @@
 
 To install `cmip7repack`, download the shell script in this repository with that name and give it executable permissions. 
 
+## Dependencies
+
+`cmip7repack` is a shell script that requires that the HDF5 tools
+[`h5stat`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__s_t__u_g.html),
+[`h5dump`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__d_p__u_g.html),
+and
+[`h5repack`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__r_p__u_g.html)
+are available from the `$PATH` environment variable. These tools are
+usually automatically installed as part of a netCDF installation.
+
 ## Usage
 
 ```
