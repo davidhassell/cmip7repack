@@ -74,8 +74,8 @@ checks.
 
 Each input \fIFILE\fR is analysed using \fBh5stat\fR and \fBh5dump\fR,
 and then repacked using \fBh5repack\fR, which changes the layout for
-objects in new output file. All file attributes and data values are
-unchanged.
+objects in the new output file. All file attributes and data values
+are unchanged.
 
 .SH OPTIONS
 
