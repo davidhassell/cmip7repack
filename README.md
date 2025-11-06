@@ -56,8 +56,8 @@ DESCRIPTION
 
 METHOD
        Each  input  FILE  is  analysed  using  h5stat  and h5dump, and then
-       repacked using h5repack, which changes the layout for objects in new
-       output file. All file attributes and data values are unchanged.
+       repacked using h5repack, which changes the layout for objects in the
+       new output file. All file attributes and data values are unchanged.
 
 OPTIONS
        -d size
