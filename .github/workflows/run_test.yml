@@ -37,8 +37,7 @@ jobs:
           use-mamba: true
       - name: Install h5repack
         run: |
-          mamba install -c conda-forge pip
-          pip install h5repack
+          mamba install -c conda-forge hdf5
       - name: Check environment contents
         run: |
           conda list
