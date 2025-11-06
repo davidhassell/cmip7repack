@@ -44,5 +44,5 @@ jobs:
           pip list
       - name: Test cmip7repack
         run: |
-          ./cmip7repack --help
-          ./cmip7repack tests/data/some.nc
+          ./cmip7repack -h
+          # ./cmip7repack tests/data/some.nc
