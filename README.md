@@ -2,6 +2,10 @@
 
 `cmip7repack` is a command-line tool, bespoke to CMIP, which can be used by the modelling groups, prior to dataset publication, to "repack" their files (i.e. to re-organise the file contents to have a different chunk and internal file metadata layout) in such as way as to improve their read-performance over the lifetime of the CMIP7 archive (note that CMIP7 datasets are written only once, but read many times).
 
+## Citation
+
+Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets (0.4). Zenodo. https://doi.org/10.5281/zenodo.17550920
+
 ## Installation
 
 To install `cmip7repack`, download the shell script in this repository with that name and give it executable permissions. 
