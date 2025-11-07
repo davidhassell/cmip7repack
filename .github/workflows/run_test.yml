@@ -37,11 +37,10 @@ jobs:
           use-mamba: true
       - name: Install h5repack
         run: |
-          mamba install -c conda-forge hdf5
+          mamba install -c conda-forge netcdf4
       - name: Check environment contents
         run: |
           conda list
-          pip list
       - name: Test cmip7repack
         run: |
           ./cmip7repack -h
