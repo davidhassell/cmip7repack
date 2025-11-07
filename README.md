@@ -16,6 +16,14 @@ and
 are available from the `$PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
+We recommend installing either [`netCDF4`](https://anaconda.org/conda-forge/netcdf4) or [`hdf5`](https://anaconda.org/conda-forge/hdf5)
+from conda-forge, by creating a simple environment, and installing either package there:
+
+```
+conda create -n cmip7repack
+conda install -c conda-forge netcdf4
+```
+
 ## Usage
 
 ```
