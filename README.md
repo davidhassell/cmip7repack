@@ -226,7 +226,7 @@ SEE ALSO
 
 `check_cmip7repack` is a Python script that requires Python 3.10 or
 later, and that the Python libraries
-[pyfive](<https://pyfive.readthedocs.io>, [numpy](https://numpy.org),
+[pyfive](https://pyfive.readthedocs.io), [numpy](https://numpy.org),
 and [packaging](https://packaging.pypa.io) are available from a
 location in the `PYTHONPATH` environment variable.
 
