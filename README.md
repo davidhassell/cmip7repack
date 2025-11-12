@@ -28,7 +28,9 @@ with those names from this repository, give them executable
 permissions, and make them available from a location in the `PATH`
 environment variable.
 
-## Dependencies
+## `cmip7repack` documentation
+
+### Dependencies
 
 `cmip7repack` is a shell script that requires that the HDF5
 command-line tools
@@ -39,28 +41,7 @@ and
 are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-`check_cmip7repack` is a Python script that requires Python 3.10 or
-later, and that the Python libraries
-[pyfive](<https://pyfive.readthedocs.io>, [numpy](https://numpy.org),
-and [packaging](https://packaging.pypa.io) are available from a
-location in the `PYTHONPATH` environment variable.
-
-## Documentation
-
-### `cmip7repack`
-
-#### Dependencies
-
-`cmip7repack` is a shell script that requires that the HDF5
-command-line tools
-[`h5stat`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__s_t__u_g.html),
-[`h5dump`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__d_p__u_g.html),
-and
-[`h5repack`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__r_p__u_g.html)
-are available from the `PATH` environment variable. These tools are
-usually automatically installed as part of a netCDF installation.
-
-#### man page
+### man page
 
 
 ```
@@ -243,9 +224,9 @@ SEE ALSO
 0.5                               2025-11-12                    cmip7repack(1)
 ```
 
-### `check_cmip7repack`
+## `check_cmip7repack` documentation
 
-#### Dependencies
+### Dependencies
 
 `check_cmip7repack` is a Python script that requires Python 3.10 or
 later, and that the Python libraries
@@ -253,7 +234,7 @@ later, and that the Python libraries
 and [packaging](https://packaging.pypa.io) are available from a
 location in the `PYTHONPATH` environment variable.
 
-#### man page
+### man page
 
 ```
 check_cmip7repack(1)        General Commands Manual       check_cmip7repack(1)
