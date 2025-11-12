@@ -297,6 +297,46 @@ EXIT STATUS
        5      An input file can be opened put not parsed as an HDF5  file.  No
               input files are checked.
 
+EXAMPLES
+       1.  Testing  five  files. One of which passes the checks, and the other
+       four fail at least one check each. The exit code is 1 because  not  all
+       files passed.
+
+           $ check_cmip7repack file[1-5].nc
+           check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+           check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+
+           check_cmip7repack: date-time: Wed 12 Nov 18:52:51 GMT 2025
+
+           PASS: File 'file3.nc'
+
+           FAIL: File 'file1.nc' does not have consolidated internal metadata
+           FAIL: File 'file2,nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
+           FAIL: File 'file4.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
+           FAIL: File 'file5.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous)
+
+           check_cmip7repack: time taken: 0.491 seconds
+           check_cmip7repack: 1/6 files passed, 5/6 files failed
+           $ echo $?
+           1
+
+       2.  Testing two files that both pass the checks. The exit code is 0 be‐
+       cause all files passed.
+
+           $ check_cmip7repack file6.nc file7.nc
+           check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+           check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+
+           check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
+
+           PASS: File 'file6.nc'
+           PASS: File 'file7.nc'
+
+           check_cmip7repack: time taken: 0.0622 seconds
+           check_cmip7repack: 2/2 files passed, 0/2 files failed
+           $ echo $?
+           0
+
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
 
@@ -304,8 +344,8 @@ REPORTING BUGS
        Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
 
 COPYRIGHT
-       Copyright   2025   License   BSD  3-Clause  <https://opensource.org/li‐
-       cense/bsd-3-clause>. This is free software: you are free to change  and
+       Copyright  2025  License   BSD   3-Clause   <https://opensource.org/li‐
+       cense/bsd-3-clause>.  This is free software: you are free to change and
        redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO

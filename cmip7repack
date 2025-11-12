@@ -257,7 +257,7 @@ fi
 
 # Defaults
 gzip=4 # -z
-size=4194304 # -d
+size=419430 # -d
 version=false # -v
 overwrite=false # -o
 dry_run=false # -x
@@ -272,7 +272,7 @@ do
              echo -e "$usage" >&2
              exit 2
          fi
-         if [ "$size" -lt 4194304 ]; then
+         if [ "$size" -lt 419430 ]; then
              echo "Option -d requires an argument of at least 4194304 (i.e. 4 MiB)" >&2
              echo -e $"$usage" >&2
              exit 2

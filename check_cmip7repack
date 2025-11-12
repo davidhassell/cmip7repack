@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     from packaging.version import Version
 
-    # Uncomment when 1.0 is ready!
+    # Uncomment when pyfive 1.0 is ready!
     #    if Version(pyfive.__version__) < Version("1.0"):
     #        raise RuntimeError(
     #            "Must have Python library 'pyfive' version 1.0 or newer. "
@@ -116,6 +116,51 @@ An input file can not be opened. No input files are checked.
 An input file can be opened put not parsed as an HDF5 file. No input
 files are checked.
 
+.SH EXAMPLES
+
+\fB1.\fR Testing five files. One of which passes the checks, and the
+other four fail at least one check each. The exit code is 1 because
+not all files passed.
+
+.nf
+    \fB$ check_cmip7repack file[1-5].nc\fR
+    check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+    check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+        
+    check_cmip7repack: date-time: Wed 12 Nov 18:52:51 GMT 2025
+
+    PASS: File 'file3.nc' 
+    
+    FAIL: File 'file1.nc' does not have consolidated internal metadata
+    FAIL: File 'file2,nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
+    FAIL: File 'file4.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
+    FAIL: File 'file5.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous) 
+    
+    check_cmip7repack: time taken: 0.491 seconds
+    check_cmip7repack: 1/6 files passed, 5/6 files failed
+    \fB$ echo $?\fR
+    1
+.fi
+
+\fB2.\fR Testing two files that both pass the checks. The exit code is
+0 because all files passed.
+
+.nf
+    \fB$ check_cmip7repack file6.nc file7.nc\fR
+    check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+    check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+        
+    check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
+
+    PASS: File 'file6.nc' 
+    PASS: File 'file7.nc' 
+    
+    check_cmip7repack: time taken: 0.0622 seconds
+    check_cmip7repack: 2/2 files passed, 0/2 files failed
+    \fB$ echo $?\fR
+    0
+.fi
+
 .SH AUTHORS
 Written by David Hassell and Ezequiel Cimadevilla.
 
@@ -162,6 +207,7 @@ the extent permitted by law.
     args = parser.parse_args()
 
     print(f"{iam}: Version {__version__} at {sys.argv[0]}\n")
+    print(f"{iam}: pyfive: Version {pyfive.__version__} at {pyfive.__file__}\n")
     if args.v:
         sys.exit(0)
 
@@ -200,10 +246,12 @@ the extent permitted by law.
             # Check for the time coordinates variable having one chunk
             t = f["time"]
             chunks = t.chunks
-            if chunks is not None and prod(t.chunks) < t.size:
+            if chunks is not None and t.id.get_num_chunks() > 1:
+                # At least two chunks
                 error.append(
                     f"FAIL: File {filename!r} time coordinates variable "
-                    "'time' has more than one chunk"
+                    f"'time' has {t.id.get_num_chunks()} chunks "
+                    "(expected 1 chunk or contiguous)"
                 )
                 continue
 
@@ -213,10 +261,12 @@ the extent permitted by law.
                 if bounds in f:
                     b = f[bounds]
                     chunks = b.chunks
-                    if chunks is not None and prod(b.chunks) < b.size:
+                    if chunks is not None and b.id.get_num_chunks() > 1:
+                        # At least two chunks
                         error.append(
                             f"FAIL: File {filename!r} time bounds variable "
-                            f"{bounds!r} has more than one chunk"
+                            f"{bounds!r} has {b.id.get_num_chunks()} chunks "
+                            "(expected 1 chunk or contiguous)"
                         )
                         continue
 
@@ -225,11 +275,12 @@ the extent permitted by law.
             variable_id = str(np.array(f.attrs["variable_id"]).astype("U"))
             if variable_id in f:
                 d = f[variable_id]
-                wordsize = d.dtype.itemsize
-                chunks = d.chunks
-                if chunks is not None and d.size * wordsize > four_MiB:
+                if chunks is not None and d.id.get_num_chunks() > 1:
+                    # At least two chunks
+                    chunks = d.chunks
+                    wordsize = d.dtype.itemsize
                     chunksize = prod(chunks) * wordsize
-
+                    
                     lee_way = 0
                     if len(chunks) > 1:
                         lee_way = prod(chunks[1:]) * wordsize
@@ -237,22 +288,23 @@ the extent permitted by law.
                     if chunksize + lee_way < four_MiB:
                         error.append(
                             f"FAIL: File {filename!r} data variable "
-                            f"{variable_id!r} as chunk size {chunksize} "
-                            "bytes. Expected at least "
-                            f"{four_MiB - lee_way} bytes"
+                            f"{variable_id!r} has uncompressed chunk size "
+                            f"{chunksize} bytes (expected at least "
+                            f"{four_MiB - lee_way} bytes or 1 chunk "
+                            "or contiguous)"
                         )
                         continue
 
         # Still here? Then the file has passed the checks.
-        ok.append(f"OK: File {filename!r}")
+        ok.append(f"PASS: File {filename!r}")
 
     if ok:
-        print("\n".join(ok))
+        print("\n".join(ok), "\n")
 
     if error:
-        print("\n".join(error))
+        print("\n".join(error), "\n")
 
-    print(f"\n{iam}: time taken: {time.time() - start0:.3} seconds")
+    print(f"{iam}: time taken: {time.time() - start0:.3} seconds")
     print(
         f"{iam}: {len(ok)}/{len(args.FILE)} files passed, "
         f"{len(error)}/{len(args.FILE)} files failed"
