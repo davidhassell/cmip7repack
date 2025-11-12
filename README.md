@@ -13,7 +13,7 @@ bespoke to CMIP, which can be used to check if datasets have a
 sufficiently good internal structure. Any dataset that has been
 output by `cmip7repack` is guaranteed to pass the checks.
         
-# Citations
+# Citation
 
 Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
 
