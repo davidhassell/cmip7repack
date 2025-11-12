@@ -1,4 +1,4 @@
-## **Note:** _These tools are currently available for testing. Real CMIP7 workflows should use version 1.0 or later._
+## Note: _These tools are currently available for testing. Real CMIP7 workflows should use version 1.0 or later._
 
 # `cmip7repack` and `check_cmip7repack`
 
@@ -333,7 +333,6 @@ EXAMPLES
            check_cmip7repack: 1/6 files passed, 5/6 files failed
            $ echo $?
            1
-
 
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
