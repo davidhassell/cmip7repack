@@ -1,4 +1,4 @@
-## Note: These tools are available for beta testing. Use in real CMIP7 workflows should use version 1.0 or later.
+## Note: _These tools are available for beta testing. Use in real CMIP7 workflows should use version 1.0 or later._
 
 # `cmip7repack` and `check_cmip7repack`
 
