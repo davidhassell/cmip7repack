@@ -10,10 +10,8 @@ but read many times).
 
 `check_cmip7repack` is a command-line tool for Unix-like platforms,
 bespoke to CMIP, which can be used to check if datasets have a
-sufficiently good internal structure.
-
-Any dataset that has been output by `cmip7repack` is guaranteed to
-pass the checks.
+sufficiently good internal structure. Any dataset that has been
+output by `cmip7repack` is guaranteed to pass the checks.
         
 # Citations
 
@@ -28,7 +26,7 @@ environment variable.
 
 # `cmip7repack` documentation
 
-## Dependencies
+### Dependencies
 
 `cmip7repack` is a shell script that requires that the HDF5
 command-line tools
@@ -39,7 +37,7 @@ and
 are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-## man page
+### man page
 
 
 ```
@@ -224,7 +222,7 @@ SEE ALSO
 
 # `check_cmip7repack` documentation
 
-## Dependencies
+### Dependencies
 
 `check_cmip7repack` is a Python script that requires Python 3.10 or
 later, and that the Python libraries
@@ -232,7 +230,7 @@ later, and that the Python libraries
 and [packaging](https://packaging.pypa.io) are available from a
 location in the `PYTHONPATH` environment variable.
 
-## man page
+### man page
 
 ```
 check_cmip7repack(1)        General Commands Manual       check_cmip7repack(1)
@@ -314,7 +312,7 @@ SEE ALSO
 0.5                               2025-11-12              check_cmip7repack(1)
 ```
 
-## Linting
+# Linting
 
 `cmip7repack` passes
 [ShellCheck](https://github.com/koalaman/shellcheck) analysis.
