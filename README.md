@@ -1,14 +1,32 @@
 # cmip7repack
 
-`cmip7repack` is a command-line tool, bespoke to CMIP, which can be used by the modelling groups, prior to dataset publication, to "repack" their files (i.e. to re-organise the file contents to have a different chunk and internal file metadata layout) in such as way as to improve their read-performance over the lifetime of the CMIP7 archive (note that CMIP7 datasets are written only once, but read many times).
+`cmip7repack` is a command-line tool for Unix-like platforms, bespoke
+to CMIP, which can be used by the modelling groups, prior to dataset
+publication, to "repack" their files (i.e. to re-organise the file
+contents to have a different chunk and internal file metadata layout)
+in such as way as to improve their read-performance over the lifetime
+of the CMIP7 archive (note that CMIP7 datasets are written only once,
+but read many times).
 
-## Citation
+# check_cmip7repack
+
+`check_cmip7repack` is a command-line tool for Unix-like platforms,
+bespoke to CMIP, which can be used to check if datasets have a
+sufficiently good internal structure.
+
+Any dataset that has been output by `cmip7repack` is guaranteed to
+pass the checks.
+        
+## Citations
 
 Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
 
 ## Installation
 
-To install `cmip7repack`, download the shell script in this repository with that name and give it executable permissions. 
+To install `cmip7repack` and `check_cmip7repack`, download the scripts
+with those names from this repository, give them executable
+permissions, and make them available from a location in the `PATH`
+environment variable.
 
 ## Dependencies
 
@@ -18,10 +36,18 @@ command-line tools
 [`h5dump`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__d_p__u_g.html),
 and
 [`h5repack`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__r_p__u_g.html)
-are available from the `$PATH` environment variable. These tools are
+are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-## Usage
+`check_cmip7repack` is a Python script that requires Python 3.10 or
+later, and that the Python libraries
+[pyfive](<https://pyfive.readthedocs.io>, [numpy](https://numpy.org),
+and [packaging](https://packaging.pypa.io) are available from a
+location in the `PYTHONPATH` environment variable.
+
+## Documentation
+
+### `cmip7repack`
 
 ```
 cmip7repack(1)              General Commands Manual             cmip7repack(1)
@@ -203,7 +229,91 @@ SEE ALSO
 0.5                               2025-11-12                    cmip7repack(1)
 ```
 
+### `check_cmip7repack`
+
+```
+check_cmip7repack(1)        General Commands Manual       check_cmip7repack(1)
+
+NAME
+       check_cmip7repack  -  check  that datasets meet the CMIP7 repacking re‐
+       quirements.
+
+SYNOPSIS
+       check_cmip7repack  [-h] [-v] FILE [FILE ...]
+
+DESCRIPTION
+       For each input FILE, check_cmip7repack will
+
+       — Check that time coordinate  variable  (assumed  to  be  the  variable
+         called "time" in the root group), if it exists, has a chunk.
+
+       — Check  that  the time bounds variable (defined by the time coordinate
+         variable's "bounds" attribute), if it exists, has a single chunk.
+
+       — Check that data variable (defined  by  the  global  attribute  "vari‐
+         able_id"),  if  it  exists, has a single chunk or has an uncompressed
+         chunk size of at least 41943044 bytes  (i.e.  4  MiB).  However,  the
+         check  will  still  pass for smaller chunks if increasing the chunk's
+         shape by one element along the leading (i.e. slowest  moving)  dimen‐
+         sion of the data would result in a chunk size of at least 4 MiB.
+
+       — Check  that  all  of the internal file metadata is collated to a con‐
+         tiguous block near the start of the file, before  all  of  the  vari‐
+         ables' data chunks.
+
+       Any    input    FILE    that    has    been   output   by   cmip7repack
+       <https://github.com/NCAS-CMS/cmip7repack> is guaranteed to  pass  these
+       checks.
+
+DEPENDENCIES
+       Requires  Python  3.10  or  later, and that the Python libraries pyfive
+       <https://pyfive.readthedocs.io>, numpy <https://numpy.org>, and packag‐
+       ing <https://packaging.pypa.io> are available from a  location  in  the
+       PYTHONPATH environment variable.
+
+METHOD
+       Each input FILE is analysed using the Python pyfive package.
+
+OPTIONS
+       -h     Display this help and exit.
+
+       -v     Print version number and exit.
+
+EXIT STATUS
+       0      All input files meet the CMIP7 repacking requirements
+
+       1      At  least  one  input file does not meet the CMIP7 repacking re‐
+              quirements. All files were checked.
+
+       2      An incorrect command-line option.
+
+       3      An input file does not exist. No input files are checked.
+
+       4      An input file can not be opened. No input files are checked.
+
+       5      An input file can be opened put not parsed as an HDF5  file.  No
+              input files are checked.
+
+AUTHORS
+       Written by David Hassell and Ezequiel Cimadevilla.
+
+REPORTING BUGS
+       Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
+
+COPYRIGHT
+       Copyright   2025   License   BSD  3-Clause  <https://opensource.org/li‐
+       cense/bsd-3-clause>. This is free software: you are free to change  and
+       redistribute it. There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       cmip7repack(1)
+
+0.5                               2025-11-12              check_cmip7repack(1)
+```
+
 ## Linting
 
 `cmip7repack` passes
 [ShellCheck](https://github.com/koalaman/shellcheck) analysis.
+
+`check_cmip7repack` is linted with [black](https://black.readthedocs.io).

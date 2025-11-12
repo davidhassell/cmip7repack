@@ -1,0 +1,266 @@
+#! /usr/bin/env python3
+# -*-python-*-
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+    import time
+
+    from math import prod
+
+    import pyfive
+    import numpy as np
+
+    from packaging.version import Version
+
+    # Uncomment when 1.0 is ready!
+    #    if Version(pyfive.__version__) < Version("1.0"):
+    #        raise RuntimeError(
+    #            "Must have Python library 'pyfive' version 1.0 or newer. "
+    #            f"Got: {pyfive.__version__}"
+    #        )
+
+    start0 = time.time()
+
+    iam = "check_cmip7repack"
+    __version__ = "0.5"
+    __date__ = "2025-11-12"
+
+    def print_help():
+        import subprocess
+
+        manpage = rf"""
+.TH {iam} 1 {__date__} {__version__}
+.
+.SH NAME
+
+{iam} - check that datasets meet the CMIP7 repacking requirements.
+
+.SH SYNOPSIS
+
+\fB{iam}\fR  [-h] [-v] \fIFILE\fR [\fIFILE\fR ...]
+
+.SH DESCRIPTION
+
+For each input \fIFILE\fR, \fB{iam}\fR will
+.
+.IP "\\(em" 2
+Check that time coordinate variable (assumed to be the variable called
+"time" in the root group), if it exists, has a chunk.
+
+.IP "\\(em" 2
+Check that the time bounds variable (defined by the time coordinate
+variable's "bounds" attribute), if it exists, has a single chunk.
+
+.IP "\\(em" 2
+Check that data variable (defined by the global attribute
+"variable_id"), if it exists, has a single chunk or has an
+uncompressed chunk size of at least 41943044 bytes (i.e. 4
+MiB). However, the check will still pass for smaller chunks if
+increasing the chunk's shape by one element along the leading
+(i.e. slowest moving) dimension of the data would result in a chunk
+size of at least 4 MiB.
+
+.IP "\\(em" 2
+Check that all of the internal file metadata is collated to a
+contiguous block near the start of the file, before all of the
+variables' data chunks.
+
+.IP "" 0
+
+Any input \fIFILE\fR that has been output by \fBcmip7repack\fR
+<https://github.com/NCAS-CMS/cmip7repack> is guaranteed to pass these
+checks.
+        
+.SH DEPENDENCIES
+
+Requires Python 3.10 or later, and that the Python libraries
+\fBpyfive\fR <https://pyfive.readthedocs.io>, \fBnumpy\fR
+<https://numpy.org>, and \fBpackaging\fR <https://packaging.pypa.io>
+are available from a location in the PYTHONPATH environment variable.
+
+.SH METHOD
+
+Each input \fIFILE\fR is analysed using the Python \fBpyfive\fR
+package.
+  
+.SH OPTIONS
+
+.TP
+.B \-h
+Display this help and exit.
+
+.TP
+.B \-v
+Print version number and exit.
+
+. SH EXIT STATUS
+
+.IP \fB0\fR
+All input files meet the CMIP7 repacking requirements
+
+.IP \fB1\fR
+At least one input file does not meet the CMIP7 repacking
+requirements. All files were checked.
+
+.IP \fB2\fR
+An incorrect command-line option.
+
+.IP \fB3\fR
+An input file does not exist. No input files are checked.
+
+.IP \fB4\fR
+An input file can not be opened. No input files are checked.
+
+.IP \fB5\fR
+An input file can be opened put not parsed as an HDF5 file. No input
+files are checked.
+
+.SH AUTHORS
+Written by David Hassell and Ezequiel Cimadevilla.
+
+.SH REPORTING BUGS
+Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
+
+.SH COPYRIGHT
+Copyright 2025 License BSD 3-Clause
+<https://opensource.org/license/bsd-3-clause>. This is free software:
+you are free to change and redistribute it. There is NO WARRANTY, to
+the extent permitted by law.
+
+.SH SEE ALSO
+\fBcmip7repack\fR(1)
+"""
+        p = subprocess.Popen(
+            [
+                "man",
+                "-r",
+                " Manual page check_cmip7repack(1) ?ltline %lt?L/%L.:",
+                "-l",
+                "-",
+            ],
+            stdin=subprocess.PIPE,
+        )
+        p.communicate(bytes(manpage, "utf8"))
+
+    # Parse command line options
+    parser = argparse.ArgumentParser(
+        prog=iam,
+        description="Check that datasets meet the CMIP7 repacking requirements",
+    )
+    parser.add_argument(
+        "FILE", nargs="+", help="One or more CMIP7 files to check."
+    )
+    parser.add_argument(
+        "-v", action="store_true", help="Print version number and exit."
+    )
+
+    if "-h" in sys.argv:
+        print_help()
+        sys.exit(0)
+
+    args = parser.parse_args()
+
+    print(f"{iam}: Version {__version__} at {sys.argv[0]}\n")
+    if args.v:
+        sys.exit(0)
+
+    four_MiB = 4 * (2**20)
+    ok = []
+    error = []
+
+    # Loop round input files
+    for filename in args.FILE:
+        # Open the file with pyfive
+        try:
+            f = pyfive.File(filename)
+        except FileNotFoundError:
+            print(f"NON-EXISTENT: File {filename!r}\n\nNO INPUT FILES CHECKED")
+            sys.exit(3)
+        except PermissionError:
+            print(f"CAN'T OPEN: File {filename!r}\n\nNO INPUT FILES CHECKED")
+            sys.exit(4)
+        except Exception:
+            print(f"CAN'T PARSE: File {filename!r}\n\nNO INPUT FILES CHECKED")
+            sys.exit(5)
+
+        # Check for consolidated internal metadata
+        try:
+            if not f.consolidated_metadata:
+                error.append(
+                    f"FAIL: File {filename!r} does not have consolidated "
+                    "internal metadata"
+                )
+                continue
+        except Exception:
+            print(f"CAN'T PARSE: File {filename!r}\n\nNO INPUT FILES CHECKED")
+            sys.exit(5)
+
+        if "time" in f:
+            # Check for the time coordinates variable having one chunk
+            t = f["time"]
+            chunks = t.chunks
+            if chunks is not None and prod(t.chunks) < t.size:
+                error.append(
+                    f"FAIL: File {filename!r} time coordinates variable "
+                    "'time' has more than one chunk"
+                )
+                continue
+
+            # Check for the time bounds variable having one chunk
+            if "bounds" in t.attrs:
+                bounds = str(np.array(t.attrs["bounds"]).astype("U"))
+                if bounds in f:
+                    b = f[bounds]
+                    chunks = b.chunks
+                    if chunks is not None and prod(b.chunks) < b.size:
+                        error.append(
+                            f"FAIL: File {filename!r} time bounds variable "
+                            f"{bounds!r} has more than one chunk"
+                        )
+                        continue
+
+        # Check for the data variable having one chunks of at least ~4MiB
+        if "variable_id" in f.attrs:
+            variable_id = str(np.array(f.attrs["variable_id"]).astype("U"))
+            if variable_id in f:
+                d = f[variable_id]
+                wordsize = d.dtype.itemsize
+                chunks = d.chunks
+                if chunks is not None and d.size * wordsize > four_MiB:
+                    chunksize = prod(chunks) * wordsize
+
+                    lee_way = 0
+                    if len(chunks) > 1:
+                        lee_way = prod(chunks[1:]) * wordsize
+
+                    if chunksize + lee_way < four_MiB:
+                        error.append(
+                            f"FAIL: File {filename!r} data variable "
+                            f"{variable_id!r} as chunk size {chunksize} "
+                            "bytes. Expected at least "
+                            f"{four_MiB - lee_way} bytes"
+                        )
+                        continue
+
+        # Still here? Then the file has passed the checks.
+        ok.append(f"OK: File {filename!r}")
+
+    if ok:
+        print("\n".join(ok))
+
+    if error:
+        print("\n".join(error))
+
+    print(f"\n{iam}: time taken: {time.time() - start0:.3} seconds")
+    print(
+        f"{iam}: {len(ok)}/{len(args.FILE)} files passed, "
+        f"{len(error)}/{len(args.FILE)} files failed"
+    )
+
+    if error:
+        # Some files failed
+        sys.exit(1)
+
+    # All files passed
+    sys.exit(0)
