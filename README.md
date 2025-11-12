@@ -1,4 +1,4 @@
-# cmip7repack and check_cmip7repack
+# `cmip7repack` and `check_cmip7repack`
 
 `cmip7repack` is a command-line tool for Unix-like platforms, bespoke
 to CMIP, which can be used by the modelling groups, prior to dataset
