@@ -1,4 +1,4 @@
-# cmip7repack
+# cmip7repack and check_cmip7repack
 
 `cmip7repack` is a command-line tool for Unix-like platforms, bespoke
 to CMIP, which can be used by the modelling groups, prior to dataset
@@ -8,8 +8,6 @@ in such as way as to improve their read-performance over the lifetime
 of the CMIP7 archive (note that CMIP7 datasets are written only once,
 but read many times).
 
-# check_cmip7repack
-
 `check_cmip7repack` is a command-line tool for Unix-like platforms,
 bespoke to CMIP, which can be used to check if datasets have a
 sufficiently good internal structure.
@@ -17,20 +15,20 @@ sufficiently good internal structure.
 Any dataset that has been output by `cmip7repack` is guaranteed to
 pass the checks.
         
-## Citations
+# Citations
 
 Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
 
-## Installation
+# Installation
 
 To install `cmip7repack` and `check_cmip7repack`, download the scripts
 with those names from this repository, give them executable
 permissions, and make them available from a location in the `PATH`
 environment variable.
 
-## `cmip7repack` documentation
+# `cmip7repack` documentation
 
-### Dependencies
+## Dependencies
 
 `cmip7repack` is a shell script that requires that the HDF5
 command-line tools
@@ -41,7 +39,7 @@ and
 are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-### man page
+## man page
 
 
 ```
@@ -224,9 +222,9 @@ SEE ALSO
 0.5                               2025-11-12                    cmip7repack(1)
 ```
 
-## `check_cmip7repack` documentation
+# `check_cmip7repack` documentation
 
-### Dependencies
+## Dependencies
 
 `check_cmip7repack` is a Python script that requires Python 3.10 or
 later, and that the Python libraries
@@ -234,7 +232,7 @@ later, and that the Python libraries
 and [packaging](https://packaging.pypa.io) are available from a
 location in the `PYTHONPATH` environment variable.
 
-### man page
+## man page
 
 ```
 check_cmip7repack(1)        General Commands Manual       check_cmip7repack(1)
