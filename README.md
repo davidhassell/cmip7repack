@@ -49,6 +49,20 @@ location in the `PYTHONPATH` environment variable.
 
 ### `cmip7repack`
 
+#### Dependencies
+
+`cmip7repack` is a shell script that requires that the HDF5
+command-line tools
+[`h5stat`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__s_t__u_g.html),
+[`h5dump`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__d_p__u_g.html),
+and
+[`h5repack`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__r_p__u_g.html)
+are available from the `PATH` environment variable. These tools are
+usually automatically installed as part of a netCDF installation.
+
+#### man page
+
+
 ```
 cmip7repack(1)              General Commands Manual             cmip7repack(1)
 
@@ -230,6 +244,16 @@ SEE ALSO
 ```
 
 ### `check_cmip7repack`
+
+#### Dependencies
+
+`check_cmip7repack` is a Python script that requires Python 3.10 or
+later, and that the Python libraries
+[pyfive](<https://pyfive.readthedocs.io>, [numpy](https://numpy.org),
+and [packaging](https://packaging.pypa.io) are available from a
+location in the `PYTHONPATH` environment variable.
+
+#### man page
 
 ```
 check_cmip7repack(1)        General Commands Manual       check_cmip7repack(1)
