@@ -13,12 +13,11 @@ if __name__ == "__main__":
 
     from packaging.version import Version
 
-    # Uncomment when pyfive 1.0 is ready!
-    #    if Version(pyfive.__version__) < Version("1.0"):
-    #        raise RuntimeError(
-    #            "Must have Python library 'pyfive' version 1.0 or newer. "
-    #            f"Got: {pyfive.__version__}"
-    #        )
+    if Version(pyfive.__version__) < Version("1.0"):
+        raise RuntimeError(
+            "Must have Python library 'pyfive' version 1.0 or newer. "
+            f"Got: {pyfive.__version__}"
+        )
 
     start0 = time.time()
 
@@ -207,7 +206,9 @@ the extent permitted by law.
     args = parser.parse_args()
 
     print(f"{iam}: Version {__version__} at {sys.argv[0]}\n")
-    print(f"{iam}: pyfive: Version {pyfive.__version__} at {pyfive.__file__}\n")
+    print(
+        f"{iam}: pyfive: Version {pyfive.__version__} at {pyfive.__file__}\n"
+    )
     if args.v:
         sys.exit(0)
 
@@ -280,7 +281,7 @@ the extent permitted by law.
                     chunks = d.chunks
                     wordsize = d.dtype.itemsize
                     chunksize = prod(chunks) * wordsize
-                    
+
                     lee_way = 0
                     if len(chunks) > 1:
                         lee_way = prod(chunks[1:]) * wordsize
