@@ -118,7 +118,26 @@ files are checked.
 
 .SH EXAMPLES
 
-\fB1.\fR Testing five files. One of which passes the checks, and the
+\fB1.\fR Testing two files that both pass the checks. The exit code is
+0 because all files passed.
+
+.nf
+    \fB$ check_cmip7repack file6.nc file7.nc\fR
+    check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+    check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+        
+    check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
+
+    PASS: File 'file6.nc' 
+    PASS: File 'file7.nc' 
+    
+    check_cmip7repack: time taken: 0.0622 seconds
+    check_cmip7repack: 2/2 files passed, 0/2 files failed
+    \fB$ echo $?\fR
+    0
+.fi
+
+\fB2.\fR Testing five files. One of which passes the checks, and the
 other four fail at least one check each. The exit code is 1 because
 not all files passed.
 
@@ -140,25 +159,6 @@ not all files passed.
     check_cmip7repack: 1/6 files passed, 5/6 files failed
     \fB$ echo $?\fR
     1
-.fi
-
-\fB2.\fR Testing two files that both pass the checks. The exit code is
-0 because all files passed.
-
-.nf
-    \fB$ check_cmip7repack file6.nc file7.nc\fR
-    check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
-    check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
-        
-    check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
-
-    PASS: File 'file6.nc' 
-    PASS: File 'file7.nc' 
-    
-    check_cmip7repack: time taken: 0.0622 seconds
-    check_cmip7repack: 2/2 files passed, 0/2 files failed
-    \fB$ echo $?\fR
-    0
 .fi
 
 .SH AUTHORS

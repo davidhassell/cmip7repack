@@ -157,7 +157,6 @@ data variable is rechunked to chunks of shape 37 x 144 x 192 elements.
     cmip7repack: time taken: 5 seconds
    
     cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94942759 bytes (29% smaller than input files)
-    \fB$\fR
 .fi
 
 \fB2.\fR Repack a file using the non-default data variable chunk size
@@ -180,7 +179,6 @@ chunk shape from example 1).
     cmip7repack: time taken: 5 seconds
      
     cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
-    \fB$\fR
 .fi
 
 \fB3.\fR Get the \fBh5repack\fR commands that would be used for
@@ -195,7 +193,6 @@ repacking each input file, but do not run them.
     cmip7repack: file: 'file.nc'
     cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
     cmip7repack: dry-run: not repacking
-    \fB$\fR
 .fi
 
 \fB4.\fR Repack multiple files with one command. This takes the same
@@ -224,7 +221,6 @@ convenient.
     cmip7repack: time taken: 1 seconds
     
     cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
-    \fB$\fR
 .fi
 
 .SH AUTHORS

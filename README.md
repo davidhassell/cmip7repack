@@ -144,7 +144,6 @@ EXAMPLES
            cmip7repack: time taken: 5 seconds
 
            cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94942759 bytes (29% smaller than input files)
-           $
 
        2.  Repack  a  file  using  the non-default data variable chunk size of
        8388608, replacing the original file with its  repacked  version.  Note
@@ -165,7 +164,7 @@ EXAMPLES
            cmip7repack: time taken: 5 seconds
 
            cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
-           $
+
        3.  Get the h5repack commands that would be used for repacking each in‐
        put file, but do not run them.
 
@@ -177,7 +176,6 @@ EXAMPLES
            cmip7repack: file: 'file.nc'
            cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
            cmip7repack: dry-run: not repacking
-           $
 
        4. Repack multiple files with one command. This takes the same time  as
        repacking the files with separate commands, but may be more convenient.
@@ -203,7 +201,6 @@ EXAMPLES
            cmip7repack: time taken: 1 seconds
 
            cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
-           $
 
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
@@ -298,7 +295,24 @@ EXIT STATUS
               input files are checked.
 
 EXAMPLES
-       1.  Testing  five  files. One of which passes the checks, and the other
+       1.  Testing two files that both pass the checks. The exit code is 0 be‐
+       cause all files passed.
+
+           $ check_cmip7repack file6.nc file7.nc
+           check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
+           check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
+
+           check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
+
+           PASS: File 'file6.nc'
+           PASS: File 'file7.nc'
+
+           check_cmip7repack: time taken: 0.0622 seconds
+           check_cmip7repack: 2/2 files passed, 0/2 files failed
+           $ echo $?
+           0
+	   
+       2.  Testing  five  files. One of which passes the checks, and the other
        four fail at least one check each. The exit code is 1 because  not  all
        files passed.
 
@@ -320,22 +334,6 @@ EXAMPLES
            $ echo $?
            1
 
-       2.  Testing two files that both pass the checks. The exit code is 0 be‐
-       cause all files passed.
-
-           $ check_cmip7repack file6.nc file7.nc
-           check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
-           check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
-
-           check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
-
-           PASS: File 'file6.nc'
-           PASS: File 'file7.nc'
-
-           check_cmip7repack: time taken: 0.0622 seconds
-           check_cmip7repack: 2/2 files passed, 0/2 files failed
-           $ echo $?
-           0
 
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
