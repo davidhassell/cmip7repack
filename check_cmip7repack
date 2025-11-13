@@ -3,6 +3,7 @@
 
 if __name__ == "__main__":
     import argparse
+    import datetime
     import sys
     import time
 
@@ -13,17 +14,17 @@ if __name__ == "__main__":
 
     from packaging.version import Version
 
-    if Version(pyfive.__version__) < Version("1.0"):
-        raise RuntimeError(
-            "Must have Python library 'pyfive' version 1.0 or newer. "
-            f"Got: {pyfive.__version__}"
-        )
-
     start0 = time.time()
 
     iam = "check_cmip7repack"
     __version__ = "0.5"
     __date__ = "2025-11-12"
+
+    #    if Version(pyfive.__version__) < Version("1.0"):
+    #        raise RuntimeError(
+    #            f"{iam} requires Python library 'pyfive' version 1.0 or newer. "
+    #            f"Got: {pyfive.__version__}"
+    #        )
 
     def print_help():
         import subprocess
@@ -37,7 +38,7 @@ if __name__ == "__main__":
 
 .SH SYNOPSIS
 
-\fB{iam}\fR  [-h] [-v] \fIFILE\fR [\fIFILE\fR ...]
+\fB{iam}\fR  [-h] [-v] [-V] \fIFILE\fR [\fIFILE\fR ...]
 
 .SH DESCRIPTION
 
@@ -76,7 +77,8 @@ checks.
 Requires Python 3.10 or later, and that the Python libraries
 \fBpyfive\fR <https://pyfive.readthedocs.io>, \fBnumpy\fR
 <https://numpy.org>, and \fBpackaging\fR <https://packaging.pypa.io>
-are available from a location in the PYTHONPATH environment variable.
+are available from a location given by the PYTHONPATH environment
+variable.
 
 .SH METHOD
 
@@ -91,12 +93,16 @@ Display this help and exit.
 
 .TP
 .B \-v
+Verbose mode. Print extra information.
+
+.TP
+.B \-V
 Print version number and exit.
 
 . SH EXIT STATUS
 
 .IP \fB0\fR
-All input files meet the CMIP7 repacking requirements
+All input files meet the CMIP7 repacking requirements.
 
 .IP \fB1\fR
 At least one input file does not meet the CMIP7 repacking
@@ -121,41 +127,40 @@ files are checked.
 0 because all files passed.
 
 .nf
-    \fB$ check_cmip7repack file6.nc file7.nc\fR
-    check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
-    check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
-        
-    check_cmip7repack: date-time: Wed 12 Nov 18:56:51 GMT 2025
-
-    PASS: File 'file6.nc' 
-    PASS: File 'file7.nc' 
-    
-    check_cmip7repack: time taken: 0.0622 seconds
-    check_cmip7repack: 2/2 files passed, 0/2 files failed
+    \fB$ check_cmip7repack file1.nc file2.nc\fR
+    PASS: File 'file1.nc'
+    PASS: File 'file2.nc'
     \fB$ echo $?\fR
     0
 .fi
 
-\fB2.\fR Testing five files. One of which passes the checks, and the
-other four fail at least one check each. The exit code is 1 because
-not all files passed.
+\fB2.\fR Repaeting the test of example \fB1.\fR with verbose mode
+enabled.
 
 .nf
-    \fB$ check_cmip7repack file[1-5].nc\fR
+    \fB$ check_cmip7repack -v file1.nc file2.nc\fR
     check_cmip7repack: Version 0.5 at /usr/bin/check_cmip7repack
     check_cmip7repack: pyfive: Version 1.0 at /usr/bin/pyfive/__init__.py
-        
-    check_cmip7repack: date-time: Wed 12 Nov 18:52:51 GMT 2025
+    check_cmip7repack: date-time: 2025-11-13 09:31:57.232149
 
-    PASS: File 'file3.nc' 
+    PASS: File 'file1.nc'
+    PASS: File 'file2.nc'
     
-    FAIL: File 'file1.nc' does not have consolidated internal metadata
-    FAIL: File 'file2,nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
-    FAIL: File 'file4.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
-    FAIL: File 'file5.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous) 
-    
-    check_cmip7repack: time taken: 0.491 seconds
-    check_cmip7repack: 1/6 files passed, 5/6 files failed
+    check_cmip7repack: time taken: 0.0622 seconds
+    check_cmip7repack: 2/2 files passed, 0/2 files failed
+.fi
+
+\fB3.\fR Testing five files, one of which (file5.nc) passes the
+checks, and the other four fail at least one check each. The exit code
+is 1 because not all files passed.
+
+.nf
+    \fB$ check_cmip7repack file[3-7].nc\fR
+    PASS: File 'file5.nc'
+    FAIL: File 'file3.nc' does not have consolidated internal metadata
+    FAIL: File 'file4.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous)
+    FAIL: File 'file6.nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
+    FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
     \fB$ echo $?\fR
     1
 .fi
@@ -196,7 +201,12 @@ the extent permitted by law.
         "FILE", nargs="+", help="One or more CMIP7 files to check."
     )
     parser.add_argument(
-        "-v", action="store_true", help="Print version number and exit."
+        "-v",
+        action="store_true",
+        help="Verbose mode. Print extra information.",
+    )
+    parser.add_argument(
+        "-V", action="store_true", help="Print version number and exit."
     )
 
     if "-h" in sys.argv:
@@ -205,12 +215,15 @@ the extent permitted by law.
 
     args = parser.parse_args()
 
-    print(f"{iam}: Version {__version__} at {sys.argv[0]}\n")
-    print(
-        f"{iam}: pyfive: Version {pyfive.__version__} at {pyfive.__file__}\n"
-    )
-    if args.v:
-        sys.exit(0)
+    if args.v or args.V:
+        print(f"{iam}: Version {__version__} at {sys.argv[0]}")
+        print(
+            f"{iam}: pyfive: Version {pyfive.__version__} at {pyfive.__file__}"
+        )
+        if args.V:
+            sys.exit(0)
+
+        print(f"{iam}: date-time: {datetime.datetime.now()}\n")
 
     four_MiB = 4 * (2**20)
     ok = []
@@ -296,20 +309,21 @@ the extent permitted by law.
                         )
                         continue
 
-        # Still here? Then the file has passed the checks.
+        # Still here? Then the file has passed all of the checks.
         ok.append(f"PASS: File {filename!r}")
 
     if ok:
-        print("\n".join(ok), "\n")
+        print("\n".join(ok))
 
     if error:
-        print("\n".join(error), "\n")
+        print("\n".join(error))
 
-    print(f"{iam}: time taken: {time.time() - start0:.3} seconds")
-    print(
-        f"{iam}: {len(ok)}/{len(args.FILE)} files passed, "
-        f"{len(error)}/{len(args.FILE)} files failed"
-    )
+    if args.v:
+        print(f"\n{iam}: time taken: {time.time() - start0:.3} seconds")
+        print(
+            f"{iam}: {len(ok)}/{len(args.FILE)} files passed, "
+            f"{len(error)}/{len(args.FILE)} files failed"
+        )
 
     if error:
         # Some files failed
