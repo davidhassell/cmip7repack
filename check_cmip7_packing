@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
 .SH SYNOPSIS
 
-\fB{iam}\fR  [-h] [-v] [-V] \fIFILE\fR [\fIFILE\fR ...]
+\fB{iam}\fR [-h] [-v] [-V] \fIFILE\fR [\fIFILE\fR ...]
 
 .SH DESCRIPTION
 
