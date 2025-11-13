@@ -22,12 +22,12 @@ if __name__ == "__main__":
     __date__ = "2025-11-13"
 
     pyfive_version = Version(version("pyfive"))
-    if  pyfive_version  < Version("1.0"):
+    if pyfive_version < Version("1.0"):
         raise RuntimeError(
             f"{iam} requires Python library 'pyfive' version 1.0 or newer. "
             f"Got: {pyfive_version}"
         )
-    
+
     def print_help():
         import subprocess
 
@@ -217,17 +217,16 @@ the extent permitted by law.
 
     if "-V" in sys.argv or "-v" in sys.argv:
         print(f"{iam}: Version {__version__} at {sys.argv[0]}")
-        print(
-            f"{iam}: pyfive: Version {pyfive_version} at {pyfive.__file__}"
-        )
         if "-V" in sys.argv:
             sys.exit(0)
+
+        print(f"{iam}: pyfive: Version {pyfive_version} at {pyfive.__file__}")
 
     if len(sys.argv) == 1:
         print("usage: check_cmip7_packing [-h] [-V] [-v] FILE [FILE ...]")
         print("Full man page with -h")
         sys.exit(2)
-    
+
     args = parser.parse_args()
 
     if args.v:
