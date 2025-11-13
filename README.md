@@ -30,7 +30,7 @@ NAME
        cmip7repack - repack CMIP7 datasets
 
 SYNOPSIS
-       cmip7repack [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]
+       cmip7repack [-d size] [-h] [-o] [-V] [-x] [-z n] FILE [FILE ...]
 
 DESCRIPTION
        For each CMIP7-compliant netCDF-4 FILE, cmip7repack will
@@ -84,7 +84,7 @@ OPTIONS
               each input file, which has the same name with  the  addition  of
               the suffix "_cmip7repack".
 
-       -v     Print version number and exit.
+       -V     Print version number and exit.
 
        -x     Do  a dry run. Show the h5repack commands for repacking each in‐
               put file, but do not run them. This allows the  commands  to  be
