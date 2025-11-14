@@ -21,7 +21,7 @@ release_date="2025-11-12"
 iam_path=$(which "$0")
 iam=$(basename "$iam_path")
 
-usage="USAGE: $iam [-d size] [-h] [-o] [-v] [-x] [-z n] FILE [FILE ...]\nFull man page with -h"
+usage="USAGE: $iam [-d size] [-h] [-o] [-V] [-x] [-z n] FILE [FILE ...]\nFull man page with -h"
 
 helpFunction()
 {
@@ -35,7 +35,7 @@ $iam - repack CMIP7 datasets
 
 .SH SYNOPSIS
 
-\fB$iam\fR [-d \fIsize\fR] [-h] [-o] [-v] [-x] [-z \fIn\fR] \fIFILE\fR [\fIFILE\fR ...]
+\fB$iam\fR [-d \fIsize\fR] [-h] [-o] [-V] [-x] [-z \fIn\fR] \fIFILE\fR [\fIFILE\fR ...]
 
 .SH DESCRIPTION
 
@@ -104,7 +104,7 @@ was successful. By default, a new file is created for each input file,
 which has the same name with the addition of the suffix "_cmip7repack".
 
 .TP
-.B \-v
+.B \-V
 Print version number and exit.
 
 .TP
@@ -253,12 +253,12 @@ fi
 
 # Defaults
 gzip=4 # -z
-size=419430 # -d
-version=false # -v
+size=4194304 # -d
+version=false # -V
 overwrite=false # -o
 dry_run=false # -x
 
-while getopts ":d:hovxz:" opt
+while getopts ":d:hoVxz:" opt
 do
     case $opt in
       d) size=$OPTARG
@@ -275,7 +275,7 @@ do
          fi ;;
       h) helpFunction ;;
       o) overwrite=true ;;
-      v) version=true ;;
+      V) version=true ;;
       x) dry_run=true ;;
       z) gzip=$OPTARG
          if ! echo "$gzip" | grep -q "^[1-9]$" ; then
