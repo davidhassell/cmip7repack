@@ -1,16 +1,34 @@
-# cmip7repack
+## Note: _These tools are currently available for testing. Real CMIP7 workflows should use version 1.0 or later._
 
-`cmip7repack` is a command-line tool, bespoke to CMIP, which can be used by the modelling groups, prior to dataset publication, to "repack" their files (i.e. to re-organise the file contents to have a different chunk and internal file metadata layout) in such as way as to improve their read-performance over the lifetime of the CMIP7 archive (note that CMIP7 datasets are written only once, but read many times).
+# `cmip7repack` and `check_cmip7_packing`
 
-## Citation
+`cmip7repack` is a command-line tool for Unix-like platforms, bespoke
+to CMIP, which can be used by the modelling groups, prior to dataset
+publication, to "repack" their files (i.e. to re-organise the file
+contents to have a different chunk and internal file metadata layout)
+in such as way as to improve their read-performance over the lifetime
+of the CMIP7 archive (note that CMIP7 datasets are written only once,
+but read many times).
+
+`check_cmip7_packing` is a command-line tool for Unix-like platforms,
+bespoke to CMIP, which can be used to check if datasets have a
+sufficiently good internal structure. Any dataset that has been
+output by `cmip7repack` is guaranteed to pass the checks.
+        
+# Citation
 
 Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
 
-## Installation
+# Installation
 
-To install `cmip7repack`, download the shell script in this repository with that name and give it executable permissions. 
+To install `cmip7repack` and `check_cmip7_packing`, download the scripts
+with those names from this repository, give them executable
+permissions, and make them available from a location in the `PATH`
+environment variable.
 
-## Dependencies
+# `cmip7repack` documentation
+
+### Dependencies
 
 `cmip7repack` is a shell script that requires that the HDF5
 command-line tools
@@ -18,10 +36,11 @@ command-line tools
 [`h5dump`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__d_p__u_g.html),
 and
 [`h5repack`](https://support.hdfgroup.org/documentation/hdf5/latest/_h5_t_o_o_l__r_p__u_g.html)
-are available from the `$PATH` environment variable. These tools are
+are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-## Usage
+### man page
+
 
 ```
 cmip7repack(1)              General Commands Manual             cmip7repack(1)
@@ -125,7 +144,6 @@ EXAMPLES
            cmip7repack: time taken: 5 seconds
 
            cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94942759 bytes (29% smaller than input files)
-           $
 
        2.  Repack  a  file  using  the non-default data variable chunk size of
        8388608, replacing the original file with its  repacked  version.  Note
@@ -146,7 +164,7 @@ EXAMPLES
            cmip7repack: time taken: 5 seconds
 
            cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
-           $
+
        3.  Get the h5repack commands that would be used for repacking each in‐
        put file, but do not run them.
 
@@ -158,7 +176,6 @@ EXAMPLES
            cmip7repack: file: 'file.nc'
            cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
            cmip7repack: dry-run: not repacking
-           $
 
        4. Repack multiple files with one command. This takes the same time  as
        repacking the files with separate commands, but may be more convenient.
@@ -184,7 +201,6 @@ EXAMPLES
            cmip7repack: time taken: 1 seconds
 
            cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
-           $
 
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
@@ -203,7 +219,139 @@ SEE ALSO
 0.5                               2025-11-12                    cmip7repack(1)
 ```
 
-## Linting
+# `check_cmip7_packing` documentation
+
+### Dependencies
+
+`check_cmip7_packing` is a Python script that requires Python 3.10 or
+later, and that the Python libraries
+[pyfive](https://pyfive.readthedocs.io), [numpy](https://numpy.org),
+and [packaging](https://packaging.pypa.io) are available from a
+location in the `PYTHONPATH` environment variable.
+
+### man page
+
+```
+check_cmip7_packing(1)      General Commands Manual      check_cmip7_packing(1)
+
+NAME
+       check_cmip7_packing  - check that datasets meet the CMIP7 internal pack‐
+       ing requirements.
+
+SYNOPSIS
+       check_cmip7_packing  [-h] [-v] [-V] FILE [FILE ...]
+
+DESCRIPTION
+       For each input FILE, check_cmip7_packing will
+
+       — Check that time coordinate variable (assumed to be the variable called
+         "time" in the root group), if it exists, has a chunk.
+
+       — Check  that  the  time bounds variable (defined by the time coordinate
+         variable's "bounds" attribute), if it exists, has a single chunk.
+
+       — Check that data variable  (defined  by  the  global  attribute  "vari‐
+         able_id"),  if  it  exists,  has a single chunk or has an uncompressed
+         chunk size of at least 41943044 bytes (i.e. 4 MiB). However, the check
+         will  still pass for smaller chunks if increasing the chunk's shape by
+         one element along the leading (i.e. slowest moving) dimension  of  the
+         data would result in a chunk size of at least 4 MiB.
+
+       — Check that all of the internal file metadata is collated to a contigu‐
+         ous block near the start of the file, before  all  of  the  variables'
+         data chunks.
+
+       Any    input    FILE    that    has    been    output   by   cmip7repack
+       <https://github.com/NCAS-CMS/cmip7repack> is guaranteed  to  pass  these
+       checks.
+
+DEPENDENCIES
+       Requires  Python  3.10  or  later,  and that the Python libraries pyfive
+       <https://pyfive.readthedocs.io>, numpy <https://numpy.org>, and  packag‐
+       ing  <https://packaging.pypa.io>  are available from a location given by
+       the PYTHONPATH environment variable.
+
+METHOD
+       Each input FILE is analysed using the Python pyfive package.
+
+OPTIONS
+       -h     Display this help and exit.
+
+       -v     Verbose mode. Print extra information.
+
+       -V     Print version number and exit.
+
+EXIT STATUS
+       0      All input files meet the CMIP7 internal packing requirements.
+
+       1      At least one input file does not meet the CMIP7 internal  packing
+              requirements. All files were checked.
+
+       2      An incorrect command-line option.
+
+       3      An input file does not exist. No input files are checked.
+
+       4      An input file can not be opened. No input files are checked.
+
+       5      An  input  file  can be opened put not parsed as an HDF5 file. No
+              input files are checked.
+
+EXAMPLES
+       1. Testing two files that both pass the checks. The exit code is  0  be‐
+       cause all files passed.
+
+           $ check_cmip7_packing file1.nc file2.nc
+           PASS: File 'file1.nc'
+           PASS: File 'file2.nc'
+           $ echo $?
+           0
+
+       2. Repeating the test of example 1. with verbose mode enabled.
+
+           $ check_cmip7_packing -v file1.nc file2.nc
+           check_cmip7_packing: Version 0.5 at /usr/bin/check_cmip7_packing
+           check_cmip7_packing: pyfive: Version 1.0.0 at /usr/bin/pyfive/__init__.py
+           check_cmip7_packing: date-time: 2025-11-13 09:31:57.232149
+
+           PASS: File 'file1.nc'
+           PASS: File 'file2.nc'
+
+           check_cmip7_packing: time taken: 0.0622 seconds
+           check_cmip7_packing: 2/2 files passed, 0/2 files failed
+
+       3.  Testing  five  files, one of which (file5.nc) passes the checks, and
+       the other four fail at least one check each. The exit code is 1  because
+       not all files passed.
+
+           $ check_cmip7_packing file[3-7].nc
+           PASS: File 'file5.nc'
+           FAIL: File 'file3.nc' does not have consolidated internal metadata
+           FAIL: File 'file4.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous)
+           FAIL: File 'file6.nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
+           FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
+           $ echo $?
+           1
+
+AUTHORS
+       Written by David Hassell and Ezequiel Cimadevilla.
+
+REPORTING BUGS
+       Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
+
+COPYRIGHT
+       Copyright   2025   License   BSD   3-Clause  <https://opensource.org/li‐
+       cense/bsd-3-clause>. This is free software: you are free to  change  and
+       redistribute it. There is NO WARRANTY, to the extent permitted by law.
+
+SEE ALSO
+       cmip7repack(1)
+
+0.5                                2025-11-13            check_cmip7_packing(1)
+```
+
+# Linting
 
 `cmip7repack` passes
 [ShellCheck](https://github.com/koalaman/shellcheck) analysis.
+
+`check_cmip7_packing` is linted with [black](https://black.readthedocs.io).
