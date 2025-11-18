@@ -47,16 +47,16 @@ if __name__ == "__main__":
 For each input \fIFILE\fR, \fB{iam}\fR will
 .
 .IP "\\(em" 2
-Check that time coordinate variable (assumed to be the variable called
-"time" in the root group), if it exists, has a chunk.
+Check that the time coordinate variable (assumed to be the variable
+called "time" in the root group), if it exists, has a chunk.
 
 .IP "\\(em" 2
-Check that the time bounds variable (defined by the time coordinate
+Check that the time bounds variable (identified by the time coordinate
 variable's "bounds" attribute), if it exists, has a single chunk.
 
 .IP "\\(em" 2
-Check that data variable (defined by the global attribute
-"variable_id"), if it exists, has a single chunk or has an
+Check that data variable (identified by the global "variable_id"
+attribute), if it exists, has a single chunk or has an
 uncompressed chunk size of at least 41943044 bytes (i.e. 4
 MiB). However, the check will still pass for smaller chunks if
 increasing the chunk's shape by one element along the leading
@@ -104,14 +104,14 @@ Print version number and exit.
 . SH EXIT STATUS
 
 .IP \fB0\fR
-All input files meet the CMIP7 internal packing requirements.
+All input files meet the CMIP7 internal file packing requirements.
 
 .IP \fB1\fR
-At least one input file does not meet the CMIP7 internal packing
+At least one input file does not meet the CMIP7 internal file packing
 requirements. All files were checked.
 
 .IP \fB2\fR
-An incorrect command-line option.
+An incorrect command-line option. No input files are checked.
 
 .IP \fB3\fR
 An input file does not exist. No input files are checked.
@@ -120,7 +120,7 @@ An input file does not exist. No input files are checked.
 An input file can not be opened. No input files are checked.
 
 .IP \fB5\fR
-An input file can be opened put not parsed as an HDF5 file. No input
+An input file can be opened, but not parsed as an HDF5 file. No input
 files are checked.
 
 .SH EXAMPLES
