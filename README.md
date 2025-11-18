@@ -250,8 +250,8 @@ SYNOPSIS
 DESCRIPTION
        For each input FILE, check_cmip7_packing will
 
-       — Check that time coordinate variable (assumed to be the variable called
-         "time" in the root group), if it exists, has a chunk.
+       — Check that the time  coordinate  variable (assumed  to be the variable
+         called "time" in the root group), if it exists, has a chunk.
 
        — Check  that  the  time bounds variable (defined by the time coordinate
          variable's "bounds" attribute), if it exists, has a single chunk.
@@ -293,13 +293,13 @@ EXIT STATUS
        1      At least one input file does not meet the CMIP7 internal  packing
               requirements. All files were checked.
 
-       2      An incorrect command-line option.
+       2      An incorrect command-line option. No input files are checked.
 
        3      An input file does not exist. No input files are checked.
 
        4      An input file can not be opened. No input files are checked.
 
-       5      An  input  file  can be opened put not parsed as an HDF5 file. No
+       5      An  input  file  can be opened, but not parsed as an HDF5 file. No
               input files are checked.
 
 EXAMPLES
