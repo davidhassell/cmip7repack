@@ -24,7 +24,14 @@ Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-
 To install `cmip7repack` and `check_cmip7_packing`, download the scripts
 with those names from this repository, give them executable
 permissions, and make them available from a location in the `PATH`
-environment variable.
+environment variable. _These tools will soon be available via `pip` and `conda`._
+
+Should you need to install any netCDF package, we recommend installing either [`netCDF4`](https://anaconda.org/conda-forge/netcdf4) or [`hdf5`](https://anaconda.org/conda-forge/hdf5) from conda-forge, by creating a simple conda environment, and installing either package there:
+
+```
+conda create -n cmip7repack
+conda install -c conda-forge netcdf4
+```
 
 # `cmip7repack` documentation
 
@@ -40,7 +47,6 @@ are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
 ### man page
-
 
 ```
 cmip7repack(1)              General Commands Manual             cmip7repack(1)
