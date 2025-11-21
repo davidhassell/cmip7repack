@@ -1,0 +1,74 @@
+[build-system]
+requires = [
+    "setuptools>=40.6.0",
+    "setuptools_scm>=6.2",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "David Hassell", email = "david.hassell@ncas.ac.uk"},
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dynamic = [
+    "readme",
+    "version",
+]
+dependencies = []
+description = "CMIP7 data repack tool."
+license = {text = "MIT License"}
+name = "cmip7_repack"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+test = [
+   'pytest',
+   'pytest-mock',
+   'docker'
+]
+dev = [
+    'pytest',
+    'pytest-mock',
+    'ipython'
+]
+
+# needed for doc builds
+doc = [
+    "autodocsumm",
+    "sphinx",
+    "sphinx_rtd_theme",
+]
+# develop = [
+#     "pre-commit",
+#     "pylint",
+#     "pydocstyle",
+# ]
+
+
+#[project.urls]
+# Documentation = ""
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE"]
+packages = ["cmip7_repack"]
+zip-safe = false  # possibly yes
+script-files = ["cmip7_repack/cmip7repack", "cmip7_repack/check_cmip7_packing"]
+
+[tool.setuptools.dynamic]
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
