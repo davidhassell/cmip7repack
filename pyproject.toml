@@ -26,7 +26,10 @@ dynamic = [
     "readme",
     "version",
 ]
-dependencies = []
+dependencies = [
+    "pyfive",
+    "packaging",
+]
 description = "CMIP7 data repack tool."
 license = {text = "MIT License"}
 name = "cmip7_repack"

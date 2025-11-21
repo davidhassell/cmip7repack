@@ -26,11 +26,16 @@ with those names from this repository, give them executable
 permissions, and make them available from a location in the `PATH`
 environment variable. _These tools will soon be available via `pip` and `conda`._
 
-Should you need to install any netCDF package, we recommend installing either [`netCDF4`](https://anaconda.org/conda-forge/netcdf4) or [`hdf5`](https://anaconda.org/conda-forge/hdf5) from conda-forge, by creating a simple conda environment, and installing either package there:
+From conda-forge:
 
 ```
-conda create -n cmip7repack
-conda install -c conda-forge netcdf4
+conda install -c conda-forge cmip7-repack
+```
+
+or from PyPI:
+
+```
+pip install cmip7_repack
 ```
 
 # `cmip7repack` documentation
