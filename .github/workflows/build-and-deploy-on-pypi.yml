@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - add_gha
 
 jobs:
   build-n-publish:
