@@ -7,4 +7,5 @@ channels:
 dependencies:
   - python >=3.11
   - pip
+  - packaging
   - pyfive >=1.0
