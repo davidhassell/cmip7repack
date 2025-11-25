@@ -1,0 +1,11 @@
+---
+name: cmip7repack
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python >=3.11
+  - pip
+  - packaging
+  - pyfive >=1.0
