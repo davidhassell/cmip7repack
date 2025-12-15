@@ -80,13 +80,18 @@ DESCRIPTION
        — Collate all of the internal file metadata to a contiguous block  near
          the start of the file, before all of the variables' data chunks.
 
-       All  rechunked variables are de-interlaced with the HDF5 shuffle filter
-       (which significantly improves compression) before being compressed with
-       zlib (see the -z option), and also have the  Fletcher32  HDF5  checksum
-       algorithm activated.
+       Any  of  these  variables that already has an approriate chunk size will
+       not be rechunked. If no variables need rechunking then cmip7repack  will
+       only  collate the internal file metadata, which is very fast in compari‐
+       son to also having to rechunk one or more variables.
 
-       Files  repacked  with  cmip7repack will pass the CMIP7 ESGF file-layout
-       checks.
+       A rechunked variable is  de-interlaced  with  the  HDF5  shuffle  filter
+       (which  significantly improves compression) before being compressed with
+       zlib (see the -z option), and also has the Fletcher32 HDF5 checksum  al‐
+       gorithm activated.
+
+       Files  repacked  with cmip7repack will pass the CMIP7 file-layout checks
+       tested by cmip7_check_packing.
 
 METHOD
        Each input FILE is analysed using h5stat and h5dump, and then  repacked
@@ -95,17 +100,19 @@ METHOD
 
 OPTIONS
        -d size
-              Rechunk the data variable (the  variable  named  by  the  "vari‐
-              able_id"  global attribute) to have the given uncompressed chunk
-              size in bytes. If -d is unset, then the size defaults to 4194304
-              (i.e. 4 MiB). The size must be at least 4194304. The chunk shape
-              will only ever be changed along the leading (i.e.  slowest  mov‐
-              ing)  dimension  of  the data, such that resulting chunk size in
-              the new file is as large as possible without exceeding the size.
+              Rechunk the data variable  (the  variable  named  by  the  "vari‐
+              able_id"  global  attribute) to have the given uncompressed chunk
+              size in bytes. If -d is unset, then the size defaults to  4194304
+              (i.e. 4 MiB). The size must be at least 4194304.
 
-              However, if the original uncompressed chunk size  in  the  input
-              file  is  already  larger than size, then the data variable will
-              not be rechunked.
+              The chunk shape will only ever be changed along the leading (i.e.
+              slowest  moving) dimension of the data, such that resulting chunk
+              size in the new file is as large as  possible  without  exceeding
+              the size.
+
+              However,  if  the  original  uncompressed chunk size in the input
+              file is already larger than size, or the data in the  input  file
+              only has one chunk, then the data variable will not be rechunked.
 
        -h     Display this help and exit.
 
@@ -143,7 +150,7 @@ EXAMPLES
        able is rechunked to chunks of shape 37 x 144 x 192 elements.
 
            $ cmip7repack -o file.nc
-           cmip7repack: Version 0.3 at /usr/bin/cmip7repack
+           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:06:25 GMT 2025
@@ -163,7 +170,7 @@ EXAMPLES
        from example 1).
 
            $ cmip7repack -d 8388608 -o file.nc
-           cmip7repack: Version 0.3 at /usr/bin/cmip7repack
+           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:07:15 GMT 2025
@@ -175,12 +182,32 @@ EXAMPLES
            cmip7repack: time taken: 5 seconds
 
            cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
+       If  the repacked file file.nc_cmip7repack is itself repacked, then since
+       none of the variables now need rechunking, only the internl metadata  is
+       collated, which is very fast:
+
+           $ cmip7repack -o file.nc_cmip7repack
+           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
+
+           cmip7repack: date-time: Wed  5 Nov 12:07:43 GMT 2025
+           cmip7repack: file: 'file.nc'
+           cmip7repack: not rechunking variable /time with data shape (1800) and chunk shape (1800)
+           cmip7repack: not rechunking variable time_bnds with data shape (1800, 2) and chunk shape (1800, 2)
+           cmip7repack: not rechunking data variable /pr with data shape (1800, 144, 192) and chunk shape (75, 144, 192) = 8294400 bytes
+           cmip7repack: repack command: h5repack --metadata_block_size=43360 file.nc_cmip7repack file.nc_cmip7repack_cmip7repack
+           cmip7repack: running repack command ...
+           cmip7repack: successfully created 'file.nc_cmip7repack_cmip7repack'
+           cmip7repack: renamed 'file.nc_cmip7repack_cmip7repack' -> 'file.nc_cmip7repack'
+           cmip7repack: time taken: 0 seconds
+
+           cmip7repack: 1/1 files (94856788 bytes) repacked in 0 seconds (94856788 B/s) to total size 94856788 bytes (0% smaller than input files)
 
        3.  Get the h5repack commands that would be used for repacking each in‐
        put file, but do not run them.
 
            $ cmip7repack -x file.nc
-           cmip7repack: Version 0.3 at /usr/bin/cmip7repack
+           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:08:02 GMT 2025
@@ -192,7 +219,7 @@ EXAMPLES
        repacking the files with separate commands, but may be more convenient.
 
            $ cmip7repack -o file[12].nc
-           cmip7repack: Version 0.3 at /usr/bin/cmip7repack
+           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:09:13 GMT 2025
@@ -227,7 +254,7 @@ COPYRIGHT
 SEE ALSO
        h5repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.5                               2025-11-12                    cmip7repack(1)
+0.6                               2025-12-16                    cmip7repack(1)
 ```
 
 # `check_cmip7_packing` documentation
@@ -357,7 +384,7 @@ COPYRIGHT
 SEE ALSO
        cmip7repack(1)
 
-0.5                                2025-11-13            check_cmip7_packing(1)
+0.6                                2025-12-16            check_cmip7_packing(1)
 ```
 
 # Linting
