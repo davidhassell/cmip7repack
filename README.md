@@ -155,25 +155,18 @@ EXAMPLES
 
            cmip7repack: date-time: Wed  5 Nov 12:06:25 GMT 2025
            cmip7repack: file: 'file.nc'
-           cmip7repack: rechunking variable /time with shape (1800) and original
- chunk shape (512)
-           cmip7repack: rechunking variable time_bnds with shape (1800, 2) and o
-riginal chunk shape (1, 2)
-           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and 
-original chunk shape (1, 144, 192) = 110592 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=236570  -
-f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHU
-F -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF
- -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+           cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+           cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 B
+           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 'file.nc' 'file.nc_cmip7repack'
            cmip7repack: running repack command ...
            cmip7repack: successfully created 'file.nc_cmip7repack'
            cmip7repack: renamed 'file.nc_cmip7repack' -> 'file.nc'
            cmip7repack: time taken: 5 seconds
 
-           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978
-509 B/s) to total size 94942759 bytes (29% smaller than input files)
+           cmip7repack: 1/1 files (134892546 B) repacked in 5 seconds (26978509 B/s) to total size 94942759 B (29% smaller than input files)
 
-       2. Repack a file using the non-default  data  variable  chunk  size  of
+     2. Repack a file using the non-default  data  variable  chunk  size  of
        8388608,  replacing  the  original file with its repacked version. Note
        that the data variable is rechunked to chunks of shape 75 x 144  x  192
        elements  (compare  that  with  the rechunked data variable chunk shape
@@ -185,18 +178,15 @@ F -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF
 
            cmip7repack: date-time: Wed  5 Nov 12:07:15 GMT 2025
            cmip7repack: file: 'file.nc'
-           cmip7repack: rechunking variable /time with shape (1800) and original
- chunk shape (512)
-           cmip7repack: rechunking variable time_bnds with shape (1800, 2) and o
-riginal chunk shape (1, 2)
-           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and 
-original chunk shape (1, 144, 192) = 110592 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=75x144x192 file.nc file.nc_cmip7repack
+           cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+           cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 B
+           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=75x144x192 'file.nc' 'file.nc_cmip7repack'
            cmip7repack: running repack command ...
            cmip7repack: successfully created 'file.nc_cmip7repack'
            cmip7repack: time taken: 5 seconds
 
-           cmip7repack: 1/1 files (134892546 bytes) repacked in 5 seconds (26978509 B/s) to total size 94856788 bytes (29% smaller than input files)
+           cmip7repack: 1/1 files (134892546 B) repacked in 5 seconds (26978509 B/s) to total size 94856788 B (29% smaller than input files)
 
        If the repacked file file.nc_cmip7repack is itself repacked, then since
        none of the variables now need rechunking, only the internl metadata is
@@ -210,14 +200,14 @@ original chunk shape (1, 144, 192) = 110592 bytes
            cmip7repack: file: 'file.nc'
            cmip7repack: not rechunking variable /time with shape (1800) and original chunk shape (1800)
            cmip7repack: not rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1800, 2)
-           cmip7repack: not rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (75, 144, 192) = 8294400 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=43360 file.nc_cmip7repack file.nc_cmip7repack_cmip7repack
+           cmip7repack: not rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (75, 144, 192) = 8294400 B
+           cmip7repack: repack command: h5repack --metadata_block_size=43360 'file.nc_cmip7repack' 'file.nc_cmip7repack_cmip7repack'
            cmip7repack: running repack command ...
            cmip7repack: successfully created 'file.nc_cmip7repack_cmip7repack'
            cmip7repack: renamed 'file.nc_cmip7repack_cmip7repack' -> 'file.nc_cmip7repack'
            cmip7repack: time taken: 0 seconds
 
-           cmip7repack: 1/1 files (94856788 bytes) repacked in 0 seconds (94856788 B/s) to total size 94856788 bytes (0% smaller than input files)
+           cmip7repack: 1/1 files (94856788 B) repacked in 0 seconds (94856788 B/s) to total size 94856788 B (<1% smaller than input files)
 
        3. Get the h5repack commands that would be used for repacking each  in‐
        put file, but do not run them.
@@ -230,8 +220,8 @@ original chunk shape (1, 144, 192) = 110592 bytes
            cmip7repack: file: 'file.nc'
            cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
            cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
-           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
+           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 B
+           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 'file.nc' 'file.nc_cmip7repack'
            cmip7repack: dry-run: not repacking
 
        4.  Repack multiple files with one command. This takes the same time as
@@ -245,8 +235,8 @@ original chunk shape (1, 144, 192) = 110592 bytes
            cmip7repack: file: 'file1.nc'
            cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
            cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
-           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file1.nc file1.nc_cmip7repack
+           cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 B
+           cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 'file1.nc' 'file1.nc_cmip7repack'
            cmip7repack: running repack command ...
            cmip7repack: successfully created 'file1.nc_cmip7repack'
            cmip7repack: renamed 'file1.nc_cmip7repack' -> 'file1.nc'
@@ -256,14 +246,14 @@ original chunk shape (1, 144, 192) = 110592 bytes
            cmip7repack: file: 'file2.nc'
            cmip7repack: rechunking variable /time with shape (708) and original chunk shape (1)
            cmip7repack: rechunking variable time_bnds with shape (708, 2) and original chunk shape (1, 2)
-           cmip7repack: rechunking variable /pr with shape (708, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
-           cmip7repack: repack command: h5repack --metadata_block_size=149185  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=708 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=708x2 -f /toz:SHUF -f /toz:GZIP=4 -f /toz:FLET -l /toz:CHUNK=37x144x192 file2.nc file2.nc_cmip7repack
+           cmip7repack: rechunking variable /pr with shape (708, 144, 192) and original chunk shape (1, 144, 192) = 110592 B
+           cmip7repack: repack command: h5repack --metadata_block_size=149185  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=708 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=708x2 -f /toz:SHUF -f /toz:GZIP=4 -f /toz:FLET -l /toz:CHUNK=37x144x192 'file2.nc' 'file2.nc_cmip7repack'
            cmip7repack: running repack command ...
            cmip7repack: successfully created 'file2.nc_cmip7repack'
            cmip7repack: renamed 'file2.nc_cmip7repack' -> 'file2.nc'
            cmip7repack: time taken: 1 seconds
 
-           cmip7repack: 2/2 files (182714276 bytes) repacked in 6 seconds (30452379 B/s) to total size 140606512 bytes (23% smaller than input files)
+           cmip7repack: 2/2 files (182714276 B) repacked in 6 seconds (30452379 B/s) to total size 140606512 B (23% smaller than input files)
 
 AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
@@ -272,12 +262,12 @@ REPORTING BUGS
        Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
 
 COPYRIGHT
-       Copyright   2025   License   BSD  3-Clause  <https://opensource.org/li‐
-       cense/bsd-3-clause>. This is free software: you are free to change  and
+       Copyright   2025   License   BSD  3-Clause (<https://opensource.org/li‐
+       cense/bsd-3-clause). This is free software: you are free to change  and
        redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO
-       h5repack(1), h5stat(1), h5dump(1), ncdump(1)
+       cmip7_check_packing(1), h5repack(1), h5stat(1), h5dump(1), ncdump(1)
 
 0.6                               2025-12-16                    cmip7repack(1)
 ```
@@ -307,31 +297,32 @@ SYNOPSIS
 DESCRIPTION
        For each input FILE, check_cmip7_packing will
 
-       — Check that the time  coordinate  variable (assumed  to be the variable
-         called "time" in the root group), if it exists, has a chunk.
+       — Check that the time coordinate variable (assumed to  be  the  variable
+         called  "time" in the root group), if it exists, has a single chunk or
+         is contiguous.
 
-       — Check  that  the  time bounds variable (defined by the time coordinate
-         variable's "bounds" attribute), if it exists, has a single chunk.
+       — Check that the time bounds variable (identified by the time coordinate
+         variable's "bounds" attribute), if it exists, has a single chunk or is
+         contiguous.
 
-       — Check that data variable  (defined  by  the  global  attribute  "vari‐
-         able_id"),  if  it  exists,  has a single chunk or has an uncompressed
-         chunk size of at least 41943044 bytes (i.e. 4 MiB). However, the check
-         will  still pass for smaller chunks if increasing the chunk's shape by
-         one element along the leading (i.e. slowest moving) dimension  of  the
-         data would result in a chunk size of at least 4 MiB.
+       — Check that data variable (identified by the global  "variable_id"  at‐
+         tribute),  if  it exists, has a single chunk, is contiguous, or has an
+         uncompressed chunk size of at least 41943044 bytes (i.e. 4 MiB).  How‐
+         ever,  the  check will still pass for smaller chunks if increasing the
+         chunk's shape by one element along the leading (i.e.  slowest  moving)
+         dimension of the data would result in a chunk size of at least 4 MiB.
 
        — Check that all of the internal file metadata is collated to a contigu‐
-         ous block near the start of the file, before  all  of  the  variables'
+         ous  block  near  the  start of the file, before all of the variables'
          data chunks.
 
-       Any    input    FILE    that    has    been    output   by   cmip7repack
-       <https://github.com/NCAS-CMS/cmip7repack> is guaranteed  to  pass  these
-       checks.
+       Any input FILE that has been output by cmip7repack is guaranteed to pass
+       these checks.
 
 DEPENDENCIES
        Requires  Python  3.10  or  later,  and that the Python libraries pyfive
-       <https://pyfive.readthedocs.io>, numpy <https://numpy.org>, and  packag‐
-       ing  <https://packaging.pypa.io>  are available from a location given by
+       (https://pyfive.readthedocs.io), numpy (https://numpy.org), and  packag‐
+       ing  (https://packaging.pypa.io) are available from a location given by
        the PYTHONPATH environment variable.
 
 METHOD
@@ -391,7 +382,7 @@ EXAMPLES
            FAIL: File 'file3.nc' does not have consolidated internal metadata
            FAIL: File 'file4.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous)
            FAIL: File 'file6.nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
-           FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
+           FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 B (expected at least 4111936 B or 1 chunk or contiguous)
            $ echo $?
            1
 
@@ -402,12 +393,12 @@ REPORTING BUGS
        Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
 
 COPYRIGHT
-       Copyright   2025   License   BSD   3-Clause  <https://opensource.org/li‐
-       cense/bsd-3-clause>. This is free software: you are free to  change  and
+       Copyright   2025   License   BSD   3-Clause  (https://opensource.org/li‐
+       cense/bsd-3-clause). This is free software: you are free to  change  and
        redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO
-       cmip7repack(1)
+       cmip7repack(1), h5stat(1), h5dump(1), ncdump(1)
 
 0.6                                2025-12-16            check_cmip7_packing(1)
 ```

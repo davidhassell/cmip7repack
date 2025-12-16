@@ -48,15 +48,17 @@ For each input \fIFILE\fR, \fB{iam}\fR will
 .
 .IP "\\(em" 2
 Check that the time coordinate variable (assumed to be the variable
-called "time" in the root group), if it exists, has a chunk.
+called "time" in the root group), if it exists, has a single chunk or
+is contiguous.
 
 .IP "\\(em" 2
 Check that the time bounds variable (identified by the time coordinate
-variable's "bounds" attribute), if it exists, has a single chunk.
+variable's "bounds" attribute), if it exists, has a single chunk or is
+contiguous.
 
 .IP "\\(em" 2
 Check that data variable (identified by the global "variable_id"
-attribute), if it exists, has a single chunk or has an
+attribute), if it exists, has a single chunk, is contiguous, or has an
 uncompressed chunk size of at least 41943044 bytes (i.e. 4
 MiB). However, the check will still pass for smaller chunks if
 increasing the chunk's shape by one element along the leading
@@ -69,16 +71,15 @@ contiguous block near the start of the file, before all of the
 variables' data chunks.
 
 .IP "" 0
-
-Any input \fIFILE\fR that has been output by \fBcmip7repack\fR
-<https://github.com/NCAS-CMS/cmip7repack> is guaranteed to pass these
-checks.
+  
+Any input \fIFILE\fR that has been output by \fBcmip7repack\fR is
+guaranteed to pass these checks.
         
 .SH DEPENDENCIES
 
 Requires Python 3.10 or later, and that the Python libraries
-\fBpyfive\fR <https://pyfive.readthedocs.io>, \fBnumpy\fR
-<https://numpy.org>, and \fBpackaging\fR <https://packaging.pypa.io>
+\fBpyfive\fR (https://pyfive.readthedocs.io), \fBnumpy\fR
+(https://numpy.org), and \fBpackaging\fR (https://packaging.pypa.io)
 are available from a location given by the PYTHONPATH environment
 variable.
 
@@ -162,7 +163,7 @@ is 1 because not all files passed.
     FAIL: File 'file3.nc' does not have consolidated internal metadata
     FAIL: File 'file4.nc' time coordinates variable 'time' has 6000 chunks (expected 1 chunk or contiguous)
     FAIL: File 'file6.nc' time bounds variable 'time_bnds' has 1800 chunks (expected 1 chunk or contiguous)
-    FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 bytes (expected at least 4111936 bytes or 1 chunk or contiguous)
+    FAIL: File 'file7.nc' data variable 'ps' has uncompressed chunk size 411840 B (expected at least 4111936 B or 1 chunk or contiguous)
     \fB$ echo $?\fR
     1
 .fi
@@ -171,16 +172,18 @@ is 1 because not all files passed.
 Written by David Hassell and Ezequiel Cimadevilla.
 
 .SH REPORTING BUGS
-Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
+Report any bugs to https://github.com/NCAS-CMS/cmip7_repack/issues
 
 .SH COPYRIGHT
 Copyright 2025 License BSD 3-Clause
-https://opensource.org/license/bsd-3-clause. This is free software:
+(https://opensource.org/license/bsd-3-clause). This is free software:
 you are free to change and redistribute it. There is NO WARRANTY, to
 the extent permitted by law.
 
 .SH SEE ALSO
-\fBcmip7repack\fR(1)
+\fBcmip7repack\fR(1), \fBh5stat\fR(1), \fBh5dump\fR(1),
+\fBncdump\fR(1)
+
 """
         p = subprocess.Popen(
             [
@@ -306,8 +309,8 @@ the extent permitted by law.
                         error.append(
                             f"FAIL: File {filename!r} data variable "
                             f"{variable_id!r} has uncompressed chunk size "
-                            f"{chunksize} bytes (expected at least "
-                            f"{four_MiB - lee_way} bytes or 1 chunk "
+                            f"{chunksize} B (expected at least "
+                            f"{four_MiB - lee_way} B or 1 chunk "
                             "or contiguous)"
                         )
                         continue
