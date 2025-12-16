@@ -350,7 +350,7 @@ get_chunk_info()
             | grep "CHUNKED (" -m 1 \
             | sed -n 's/.*(\(.*\)).*/\1/p' \
             | sed 's/,\s*/ /g' \
-	    | sed 's/^\s*//g')
+            | sed 's/^\s*//g')
 
     contiguous="false"
     if [ "$chunk_shape" = "" ]; then
@@ -579,10 +579,10 @@ do
         # Set global variables
         get_chunk_info
 
-	if [ "$missing_variable" = "true" ]; then
-	    continue
-	fi
-	
+        if [ "$missing_variable" = "true" ]; then
+            continue
+        fi
+
         rechunk="false"
         if [ "$multiple_chunks" = "true" ]; then
             # Rechunk to one chunk
@@ -592,8 +592,8 @@ do
             time="$time -f ${variable}:GZIP=$gzip"
             time="$time -f ${variable}:FLET"
             time="$time -l ${variable}:CHUNK=$CHUNK"
-	    
-	    rechunk="true"
+
+            rechunk="true"
         fi
 
 	print_rechunk_info $rechunk
@@ -617,7 +617,7 @@ do
             variable="/$variable"
 
             # Set global variables
-            get_chunk_info	 
+            get_chunk_info
 
 	    # Initialize the original chunk size to the target size.
 	    # We'll set it to its actual value later, but only if
@@ -646,7 +646,7 @@ do
                 # that the final chunk size is less than or equal to the
                 # given size.
                 new_chunk_shape=("${chunk_shape[@]}")
-		
+
                 new_chunk_shape[0]=$((size / wordsize ))
                 n=1
                 while [ $n -lt "$ndim" ]
@@ -677,7 +677,7 @@ do
 
                     rechunk="true"
                 fi
-            fi	    
+            fi
             print_rechunk_info $rechunk "data"
         fi	
     fi
