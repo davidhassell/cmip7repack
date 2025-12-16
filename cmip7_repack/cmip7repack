@@ -366,7 +366,7 @@ get_chunk_info()
         while [ ${_n} -lt "$ndim" ]
         do
             if [ "${chunk_shape[_n]}" -lt "${data_shape[_n]}" ]; then
-		multiple_chunks="true"
+                multiple_chunks="true"
                 break
             fi
             _n=$((_n + 1))
@@ -411,11 +411,11 @@ print_rechunk_info()
     if [ "$contiguous" = "true" ]; then
         _chunk="contiguous"
     else
-	_chunk=${chunk_shape[*]}
+       _chunk=${chunk_shape[*]}
         _chunk="(${_chunk// /, })"
-	if [ "$_variable_type" = "data" ]; then
+        if [ "$_variable_type" = "data" ]; then
             _chunk="$_chunk = $original_chunk_size bytes"
-	fi
+        fi
     fi
 
     _not="not "
@@ -576,7 +576,7 @@ do
     time=""
     for variable in "/time" "$bounds"
     do
-	# Set global variables
+        # Set global variables
         get_chunk_info
 
 	if [ "$missing_variable" = "true" ]; then
@@ -586,7 +586,7 @@ do
         rechunk="false"
         if [ "$multiple_chunks" = "true" ]; then
             # Rechunk to one chunk
-	    CHUNK="${data_shape[*]}"
+            CHUNK="${data_shape[*]}"
             CHUNK=${CHUNK// /x}
             time="$time -f ${variable}:SHUF"
             time="$time -f ${variable}:GZIP=$gzip"
@@ -616,7 +616,7 @@ do
         if [ "$variable" != "" ]; then
             variable="/$variable"
 
-	    # Set global variables
+            # Set global variables
             get_chunk_info	 
 
 	    # Initialize the original chunk size to the target size.
@@ -625,7 +625,7 @@ do
 	    original_chunk_size=$size
 	    if [ "$multiple_chunks" = "true" ]; then
                 # Find the word size, in bytes, of the data values.
-		wordsize=$(get_wordsize)
+                wordsize=$(get_wordsize)
 
                 # Find actual original chunk size in bytes
                 original_chunk_size=$wordsize
@@ -645,7 +645,7 @@ do
                 # Iteratively reduce the size of first chunk dimension, so
                 # that the final chunk size is less than or equal to the
                 # given size.
-		new_chunk_shape=("${chunk_shape[@]}")
+                new_chunk_shape=("${chunk_shape[@]}")
 		
                 new_chunk_shape[0]=$((size / wordsize ))
                 n=1
@@ -665,20 +665,20 @@ do
 		done
 
 		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
-		    # Rechunk to the data variable when the new chunk
+                    # Rechunk to the data variable when the new chunk
                     # size is strictly greater than the original
                     # chunks size
-		    CHUNK=${new_chunk_shape[*]}
-		    CHUNK=${CHUNK// /x}
+                    CHUNK=${new_chunk_shape[*]}
+                    CHUNK=${CHUNK// /x}
                     data="-f ${variable}:SHUF"
                     data="$data -f ${variable}:GZIP=$gzip"
                     data="$data -f ${variable}:FLET"
                     data="$data -l ${variable}:CHUNK=$CHUNK"
-
+                    
                     rechunk="true"
-		fi
+                fi
             fi	    
-	    print_rechunk_info $rechunk "data"
+            print_rechunk_info $rechunk "data"
         fi	
     fi
     
@@ -706,14 +706,14 @@ do
         end_time=$(date +%s)
         Nout=$(( Nout + 1 ))
 
-	filesize=$(wc -c < "$file")
-	totalsizein=$(( totalsizein + filesize ))
+        filesize=$(wc -c < "$file")
+        totalsizein=$(( totalsizein + filesize ))
 
         echo "$iam: successfully created '$repacked_file'"
 
-	# Get the output file size
-	filesize=$(wc -c < "$repacked_file")
-	totalsizeout=$((totalsizeout + filesize))
+        # Get the output file size
+        filesize=$(wc -c < "$repacked_file")
+        totalsizeout=$((totalsizeout + filesize))
 
         if [ "$overwrite" = true ]; then
             # Overwrite original file with repacked file
@@ -743,7 +743,7 @@ if [ "$dry_run" = false ]; then
         if [ $pcdiff -ge 0 ]; then
             pcdiff="(${pcdiff}% smaller than input files)"
         else
-    	pcdiff=$((pcdiff * -1))
+            pcdiff=$((pcdiff * -1))
             pcdiff="(${pcdiff}% larger than input files)"
         fi
     else
