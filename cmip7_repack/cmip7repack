@@ -75,7 +75,7 @@ the start of the file, before all of the variables' data chunks.
 
 .IP "" 0
 
-Any of these variables that already has an approriate chunk size will
+Any of these variables that already have an approriate chunk size will
 \fBnot\fR be rechunked. If no variables need rechunking then
 \fB$iam\fR will only collate the internal file metadata, which is very
 fast in comparison to also having to rechunk one or more variables.
@@ -170,6 +170,9 @@ data variable is rechunked to chunks of shape 37 x 144 x 192 elements.
 
     cmip7repack: date-time: Wed  5 Nov 12:06:25 GMT 2025
     cmip7repack: file: 'file.nc'
+    cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+    cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+    cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
     cmip7repack: running repack command ...
     cmip7repack: successfully created 'file.nc_cmip7repack'
@@ -192,6 +195,9 @@ chunk shape from example 1).
     
     cmip7repack: date-time: Wed  5 Nov 12:07:15 GMT 2025
     cmip7repack: file: 'file.nc'
+    cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+    cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+    cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=75x144x192 file.nc file.nc_cmip7repack
     cmip7repack: running repack command ...
     cmip7repack: successfully created 'file.nc_cmip7repack'
@@ -211,9 +217,9 @@ metadata is collated, which is very fast:
 
     cmip7repack: date-time: Wed  5 Nov 12:07:43 GMT 2025
     cmip7repack: file: 'file.nc'
-    cmip7repack: not rechunking variable /time with data shape (1800) and chunk shape (1800)
-    cmip7repack: not rechunking variable time_bnds with data shape (1800, 2) and chunk shape (1800, 2)
-    cmip7repack: not rechunking data variable /pr with data shape (1800, 144, 192) and chunk shape (75, 144, 192) = 8294400 bytes
+    cmip7repack: not rechunking variable /time with shape (1800) and original chunk shape (1800)
+    cmip7repack: not rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1800, 2)
+    cmip7repack: not rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (75, 144, 192) = 8294400 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=43360 file.nc_cmip7repack file.nc_cmip7repack_cmip7repack
     cmip7repack: running repack command ...
     cmip7repack: successfully created 'file.nc_cmip7repack_cmip7repack'
@@ -234,6 +240,9 @@ repacking each input file, but do not run them.
     
     cmip7repack: date-time: Wed  5 Nov 12:08:02 GMT 2025
     cmip7repack: file: 'file.nc'
+    cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+    cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+    cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file.nc file.nc_cmip7repack
     cmip7repack: dry-run: not repacking
 .fi
@@ -249,6 +258,9 @@ convenient.
     
     cmip7repack: date-time: Wed  5 Nov 12:09:13 GMT 2025
     cmip7repack: file: 'file1.nc'
+    cmip7repack: rechunking variable /time with shape (1800) and original chunk shape (512)
+    cmip7repack: rechunking variable time_bnds with shape (1800, 2) and original chunk shape (1, 2)
+    cmip7repack: rechunking variable /pr with shape (1800, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=236570  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=1800 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=1800x2 -f /pr:SHUF -f /pr:GZIP=4 -f /pr:FLET -l /pr:CHUNK=37x144x192 file1.nc file1.nc_cmip7repack
     cmip7repack: running repack command ...
     cmip7repack: successfully created 'file1.nc_cmip7repack'
@@ -257,6 +269,9 @@ convenient.
     
     cmip7repack: date-time: Wed  5 Nov 12:09:18 GMT 2025
     cmip7repack: file: 'file2.nc'
+    cmip7repack: rechunking variable /time with shape (708) and original chunk shape (1)
+    cmip7repack: rechunking variable time_bnds with shape (708, 2) and original chunk shape (1, 2)
+    cmip7repack: rechunking variable /pr with shape (708, 144, 192) and original chunk shape (1, 144, 192) = 110592 bytes
     cmip7repack: repack command: h5repack --metadata_block_size=149185  -f /time:SHUF -f /time:GZIP=4 -f /time:FLET -l /time:CHUNK=708 -f /time_bnds:SHUF -f /time_bnds:GZIP=4 -f /time_bnds:FLET -l /time_bnds:CHUNK=708x2 -f /toz:SHUF -f /toz:GZIP=4 -f /toz:FLET -l /toz:CHUNK=37x144x192 file2.nc file2.nc_cmip7repack
     cmip7repack: running repack command ...
     cmip7repack: successfully created 'file2.nc_cmip7repack'
@@ -287,23 +302,41 @@ EOF
     exit 0
 }
 
+# --------------------------------------------------------------------
+# Functions
+# --------------------------------------------------------------------
 get_chunk_info()
 {
-    # ----------------------------------------------------------------
-    # Get information about the chunks of a variable ($1)
+    # -------------------------------------------------------.---------
+    # Get information about the chunks of an HDF5 variable
     #
     # Sets the global variables:
-    #   data_shape     : The data shape
-    #   ndim           : The number of data dimensions
-    #   chunk_shape    : The chunk shape
-    #   contiguous     : "true" if the data are contiguous
-    #   multiple_chunks: "true" if the data have multiple chunks
+    #   missing variable: "true" if the variable is not in the file
+    #   data_shape      : The data shape
+    #   ndim            : The number of data dimensions
+    #   chunk_shape     : The chunk shape
+    #   contiguous      : "true" if the data are contiguous
+    #   multiple_chunks : "true" if the data have multiple chunks
+    #
+    # Local variables start with _, global variables do not.
     # ----------------------------------------------------------------
-    variable=$1
-
+    missing_variable="false"
+    data_shape="unset"
+    ndim="unset"
+    chunk_shape="unset"
+    contiguous="unset"
+    multiple_chunks="unset"
+    
     # Find the data shape (e.g. 6000 2)
-    data_shape=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
-            | grep "DATASPACE  SIMPLE" -m 1 \
+    _dataspace_simple=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
+			   | grep "DATASPACE  SIMPLE" -m 1 )
+
+    if [ "$_dataspace_simple" = "" ]; then
+        missing_variable="true"
+	return
+    fi
+
+    data_shape=$(echo "$_dataspace_simple" \
             | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g' \
             | sed 's/,\s*/ /g' \
             | sed 's/^\s*//g')
@@ -319,25 +352,24 @@ get_chunk_info()
             | sed 's/,\s*/ /g' \
 	    | sed 's/^\s*//g')
 
-    if [ "$chunk_shape" = "" ] ; then
+    contiguous="false"
+    if [ "$chunk_shape" = "" ]; then
         contiguous="true"
-    else
-        contiguous="false"
     fi
 
     # shellcheck disable=SC2206
     chunk_shape=($chunk_shape)
 
     multiple_chunks="false"
-    if [ "$contiguous" = "false" ] ; then
-        n=0
-        while [ $n -lt "$ndim" ]
+    if [ "$contiguous" = "false" ]; then
+        _n=0
+        while [ ${_n} -lt "$ndim" ]
         do
-            if [ "${chunk_shape[n]}" -lt "${data_shape[n]}" ] ; then
+            if [ "${chunk_shape[_n]}" -lt "${data_shape[_n]}" ]; then
 		multiple_chunks="true"
                 break
             fi
-            n=$((n + 1))
+            _n=$((_n + 1))
         done
     fi
 }
@@ -345,22 +377,53 @@ get_chunk_info()
 get_wordsize()
 {
     # ----------------------------------------------------------------
-    # Get the word size of a variable ($1)
+    # Return the word size in bytes of an HDF5 variable.
     #
-    # Sets the global variable:
-    #   wordsize: The number of bits per data value
+    # Local variables start with _, global variables do not.
     # ----------------------------------------------------------------
-    variable=$1
-
-    datatype=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
+    _wordsize="unset"
+    
+    _datatype=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
                    | grep "DATATYPE" -m 1)
-    for ws in 32 64 16 8
+    for _ws in 32 64 16 8
     do
-        if [ "$(echo "$datatype" | grep "$ws")" != "" ] ; then
-            wordsize=$((ws / 8))
+        if [ "$(echo "$_datatype" | grep "$_ws")" != "" ]; then
+            _wordsize=$((_ws / 8))
             break
         fi
     done
+    echo $_wordsize
+}
+
+print_rechunk_info()
+{
+    # ----------------------------------------------------------------
+    # Print information about the rechunking of an HDF5 variable.
+    #
+    # Local variables start with _, global variables do not.
+    # ----------------------------------------------------------------
+    _rechunk=$1
+    _variable_type=$2
+    
+    _data=${data_shape[*]}
+    _data=${_data// /, }
+    
+    if [ "$contiguous" = "true" ]; then
+        _chunk="contiguous"
+    else
+	_chunk=${chunk_shape[*]}
+        _chunk="(${_chunk// /, })"
+	if [ "$_variable_type" = "data" ]; then
+            _chunk="$_chunk = $original_chunk_size bytes"
+	fi
+    fi
+
+    _not="not "
+    if [ "$_rechunk" = "true" ]; then
+        _not=""
+    fi
+    
+    echo "$iam: ${_not}rechunking variable $variable with shape ($_data) and original chunk shape $_chunk"
 }
 
 # --------------------------------------------------------------------
@@ -494,7 +557,7 @@ do
     #     time_bnds
     # ----------------------------------------------------------------
     bounds=$(h5dump -A -d time "$file" | awk '$1=="ATTRIBUTE" && $2=="\"bounds\""{bnds=1}bnds && $1=="(0):"{v=$NF; gsub("\"", "", v); bnds=0}END{print v}')
-    
+
     # ----------------------------------------------------------------
     # Get the h5repack -l and -f options for the time variables
     #
@@ -513,30 +576,27 @@ do
     time=""
     for variable in "/time" "$bounds"
     do
-        get_chunk_info "$variable"
+	# Set global variables
+        get_chunk_info
 
-        if [ "$multiple_chunks" = "true" ] ; then
-            # There are currently multiple chunks, so rechunk to one
-            # chunk.
+	if [ "$missing_variable" = "true" ]; then
+	    continue
+	fi
+	
+        rechunk="false"
+        if [ "$multiple_chunks" = "true" ]; then
+            # Rechunk to one chunk
 	    CHUNK="${data_shape[*]}"
             CHUNK=${CHUNK// /x}
             time="$time -f ${variable}:SHUF"
             time="$time -f ${variable}:GZIP=$gzip"
             time="$time -f ${variable}:FLET"
             time="$time -l ${variable}:CHUNK=$CHUNK"
-        else
-            data_shape=${data_shape[*]}
-	    data_shape=${data_shape// /, }
-            if [ "$contiguous" = "true" ] ; then
-                # Contiguous
-                chunk_shape="contiguous"
-            else
-                chunk_shape=${chunk_shape[*]}
-                chunk_shape="(${chunk_shape// /, })"
-            fi
-            # shellcheck disable=SC2128
-            echo "$iam: not rechunking variable $variable with data shape ($data_shape) and chunk shape $chunk_shape"
+	    
+	    rechunk="true"
         fi
+
+	print_rechunk_info $rechunk
     done
 
     # ----------------------------------------------------------------
@@ -556,15 +616,16 @@ do
         if [ "$variable" != "" ]; then
             variable="/$variable"
 
-            get_chunk_info "$variable"
+	    # Set global variables
+            get_chunk_info	 
 
 	    # Initialize the original chunk size to the target size.
 	    # We'll set it to its actual value later, but only if
 	    # there's more than one current chunk.
 	    original_chunk_size=$size
-	    if [ "$multiple_chunks" = "true" ] ; then
+	    if [ "$multiple_chunks" = "true" ]; then
                 # Find the word size, in bytes, of the data values.
-		get_wordsize "$variable"
+		wordsize=$(get_wordsize)
 
                 # Find actual original chunk size in bytes
                 original_chunk_size=$wordsize
@@ -579,16 +640,18 @@ do
 	    # If the current chunk size is less than the requested
 	    # chunk size, and there is more than one chunk, then look
 	    # for a new data variable chunk shape.
-	    CHUNK=""
-	    if [ "$original_chunk_size" -lt "$size" ] ; then
+            rechunk="false"
+	    if [ "$original_chunk_size" -lt "$size" ]; then
                 # Iteratively reduce the size of first chunk dimension, so
                 # that the final chunk size is less than or equal to the
                 # given size.
-                chunk_shape[0]=$((size / wordsize ))
+		new_chunk_shape=("${chunk_shape[@]}")
+		
+                new_chunk_shape[0]=$((size / wordsize ))
                 n=1
                 while [ $n -lt "$ndim" ]
                 do
-                    chunk_shape[0]=$((chunk_shape[0] / chunk_shape[n]))
+                    new_chunk_shape[0]=$((new_chunk_shape[0] / new_chunk_shape[n]))
                     n=$((n + 1))
                 done
 
@@ -597,36 +660,25 @@ do
 		n=0
 		while [ $n -lt "$ndim" ]
 		do
-                    new_chunk_size=$((new_chunk_size * ${chunk_shape[$n]} ))
+                    new_chunk_size=$((new_chunk_size * ${new_chunk_shape[$n]} ))
                     n=$((n + 1))
 		done
 
-		# Only rechunk if the new chunk size is strictly
-		# greater than the original chunks size
 		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
-                    # Create an h5repack CHUNK value for the data variable
-		    CHUNK=${chunk_shape[*]}
+		    # Rechunk to the data variable when the new chunk
+                    # size is strictly greater than the original
+                    # chunks size
+		    CHUNK=${new_chunk_shape[*]}
 		    CHUNK=${CHUNK// /x}
-                fi
-	    fi
+                    data="-f ${variable}:SHUF"
+                    data="$data -f ${variable}:GZIP=$gzip"
+                    data="$data -f ${variable}:FLET"
+                    data="$data -l ${variable}:CHUNK=$CHUNK"
 
-	    if [ "$CHUNK" = "" ]; then
-                data_shape=${data_shape[*]}
-                data_shape=${data_shape// /, }
-		if [ "$contiguous" = "true" ] ; then
-		    chunks="contiguous"
-		else
-		    chunks=${chunk_shape[*]}
-		    chunks="(${chunks// /, }) = $original_chunk_size bytes"
+                    rechunk="true"
 		fi
-                # shellcheck disable=SC2128
-	        echo "$iam: not rechunking data variable $variable with data shape ($data_shape) and chunk shape $chunks"
-            else
-                data="-f ${variable}:SHUF"
-                data="$data -f ${variable}:GZIP=$gzip"
-                data="$data -f ${variable}:FLET"
-                data="$data -l ${variable}:CHUNK=$CHUNK"
-	    fi
+            fi	    
+	    print_rechunk_info $rechunk "data"
         fi	
     fi
     
