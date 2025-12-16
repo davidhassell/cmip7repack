@@ -674,7 +674,7 @@ do
                     data="$data -f ${variable}:GZIP=$gzip"
                     data="$data -f ${variable}:FLET"
                     data="$data -l ${variable}:CHUNK=$CHUNK"
-                    
+
                     rechunk="true"
                 fi
             fi	    
