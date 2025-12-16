@@ -80,7 +80,7 @@ DESCRIPTION
        — Collate all of the internal file metadata to a contiguous block  near
          the start of the file, before all of the variables' data chunks.
 
-       Any  of these variables that already have an approriate chunk size will
+       Any  of these variables that  already has an approriate chunk size will
        not be rechunked. If no variables need rechunking then cmip7repack will
        only collate the internal file metadata, which is very fast in compari‐
        son to also having to rechunk one or more variables.
@@ -90,8 +90,8 @@ DESCRIPTION
        zlib (see the -z option), and also has the Fletcher32 HDF5 checksum  al‐
        gorithm activated.
 
-       Files  repacked  with cmip7repack will pass the CMIP7 file-layout checks
-       tested by cmip7_check_packing.
+       Files  repacked with cmip7repack are guaranteed to pass the CMIP7 file-
+       layout checks tested by cmip7_check_packing.
 
 METHOD
        Each input FILE is analysed using h5stat and h5dump, and then  repacked

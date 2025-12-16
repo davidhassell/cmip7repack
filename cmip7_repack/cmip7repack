@@ -75,7 +75,7 @@ the start of the file, before all of the variables' data chunks.
 
 .IP "" 0
 
-Any of these variables that already have an approriate chunk size will
+Any of these variables that already has an approriate chunk size will
 \fBnot\fR be rechunked. If no variables need rechunking then
 \fB$iam\fR will only collate the internal file metadata, which is very
 fast in comparison to also having to rechunk one or more variables.
@@ -85,8 +85,8 @@ A rechunked variable is de-interlaced with the HDF5 shuffle filter
 with zlib (see the \fB-z\fR option), and also has the Fletcher32 HDF5
 checksum algorithm activated.
 
-Files repacked with \fB$iam\fR will pass the CMIP7 file-layout checks
-tested by \fBcmip7_check_packing\fR.
+Files repacked with \fB$iam\fR are guaranteed to pass the CMIP7
+file-layout checks tested by \fBcmip7_check_packing\fR.
 
 .SH METHOD
 
@@ -332,7 +332,7 @@ get_chunk_info()
 		     | grep "^\s*DATASPACE\s\s*S" -m 1 )
     if [ "$_dataspace" = "" ]; then
         missing_variable="true"
-	return
+        return
     fi
 
     data_shape=""
