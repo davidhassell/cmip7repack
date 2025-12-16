@@ -71,7 +71,7 @@ contiguous block near the start of the file, before all of the
 variables' data chunks.
 
 .IP "" 0
-  
+
 Any input \fIFILE\fR that has been output by \fBcmip7repack\fR is
 guaranteed to pass these checks.
         

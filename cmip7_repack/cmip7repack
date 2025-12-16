@@ -341,7 +341,7 @@ get_chunk_info()
             | sed -E 's/.*\(\s*([0-9, ]+)\s*\).*/\1/; s/[[:space:]]+//g' \
             | sed 's/,\s*/ /g' \
             | sed 's/^\s*//g')
-    fi    
+    fi
     # shellcheck disable=SC2206
     data_shape=($data_shape)
 
@@ -384,7 +384,7 @@ get_wordsize()
     # Local variables start with _, global variables do not.
     # ----------------------------------------------------------------
     _wordsize="unset"
-    
+
     _datatype=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
                    | grep "DATATYPE" -m 1)
     for _ws in 32 64 16 8
@@ -406,10 +406,10 @@ print_rechunk_info()
     # ----------------------------------------------------------------
     _rechunk=$1
     _variable_type=$2
-    
+
     _data=${data_shape[*]}
     _data=${_data// /, }
-    
+
     if [ "$contiguous" = "true" ]; then
         _chunk="contiguous"
     else
@@ -424,7 +424,7 @@ print_rechunk_info()
     if [ "$_rechunk" = "true" ]; then
         _not=""
     fi
-    
+
     echo "$iam: ${_not}rechunking variable $variable with shape ($_data) and original chunk shape $_chunk"
 }
 
