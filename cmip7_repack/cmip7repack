@@ -667,6 +667,13 @@ do
 		done
 
 		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
+                    # Check that chunk shape is not larger than data shape
+                    for i in "${!new_chunk_shape[@]}"; do
+                        if [ ${new_chunk_shape[$i]} -gt ${data_shape[$i]} ] ; then
+                            new_chunk_shape[$i]=${data_shape[$i]}
+                        fi
+                    done
+
                     # Rechunk to the data variable when the new chunk
                     # size is strictly greater than the original
                     # chunks size
