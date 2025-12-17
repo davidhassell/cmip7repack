@@ -269,7 +269,7 @@ COPYRIGHT
 SEE ALSO
        cmip7_check_packing(1), h5repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                               2025-12-16                    cmip7repack(1)
+0.6                               2025-12-18                    cmip7repack(1)
 ```
 
 # `check_cmip7_packing` documentation
@@ -400,7 +400,7 @@ COPYRIGHT
 SEE ALSO
        cmip7repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                                2025-12-16            check_cmip7_packing(1)
+0.6                                2025-12-18            check_cmip7_packing(1)
 ```
 
 # Linting

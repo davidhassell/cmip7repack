@@ -1,8 +1,7 @@
 Version 0.6
 -----------
 
-**2025-12-16**
-
+**2025-12-18**
 
 * `cmip7repack`: Detect when rechunking is not necessary, and
   don't rechunk those variables

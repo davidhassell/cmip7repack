@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     iam = "check_cmip7_packing"
     __version__ = "0.6"
-    __date__ = "2025-12-16"
+    __date__ = "2025-12-18"
 
     pyfive_version = Version(version("pyfive"))
     if pyfive_version < Version("1.0"):

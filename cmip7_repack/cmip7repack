@@ -21,7 +21,7 @@
 # 
 # ====================================================================
 vn=0.6
-release_date="2025-12-16"
+release_date="2025-12-18"
 
 iam_path=$(which "$0")
 iam=$(basename "$iam_path")
@@ -364,14 +364,12 @@ get_chunk_info()
 
     multiple_chunks="false"
     if [ "$contiguous" = "false" ]; then
-        _n=0
-        while [ ${_n} -lt "$ndim" ]
+        for n in "${!chunk_shape[@]}"
         do
-            if [ "${chunk_shape[_n]}" -lt "${data_shape[_n]}" ]; then
+            if [ "${chunk_shape[n]}" -lt "${data_shape[n]}" ]; then
                 multiple_chunks="true"
                 break
             fi
-            _n=$((_n + 1))
         done
     fi
 }
@@ -387,10 +385,10 @@ get_wordsize()
 
     _datatype=$(h5dump --dataset "$variable" --header "$file" 2>/dev/null \
                    | grep "DATATYPE" -m 1)
-    for _ws in 32 64 16 8
+    for bits in 32 64 16 8
     do
-        if [ "$(echo "$_datatype" | grep "$_ws")" != "" ]; then
-            _wordsize=$((_ws / 8))
+        if [ "$(echo "$_datatype" | grep "$bits")" != "" ]; then
+            _wordsize=$((bits / 8))
             break
         fi
     done
@@ -631,11 +629,9 @@ do
 
                 # Find actual original chunk size in bytes
                 original_chunk_size=$wordsize
-                n=0
-                while [ $n -lt "$ndim" ]
+                for n in "${!chunk_shape[@]}"
                 do
                     original_chunk_size=$((original_chunk_size * chunk_shape[n]))
-                    n=$((n + 1))
                 done
 	    fi
 
@@ -659,26 +655,26 @@ do
 
 		# Find the new chunk size in bytes
 		new_chunk_size=$wordsize
-		n=0
-		while [ $n -lt "$ndim" ]
-		do
-                    new_chunk_size=$((new_chunk_size * ${new_chunk_shape[$n]} ))
-                    n=$((n + 1))
-		done
+                for n in "${!new_chunk_shape[@]}"
+                do
+                    new_chunk_size=$((new_chunk_size * new_chunk_shape[n] ))
+                done
 
-		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
-                    # Check that chunk shape is not larger than data shape
-                    for i in "${!new_chunk_shape[@]}"; do
-                        if [ ${new_chunk_shape[$i]} -gt ${data_shape[$i]} ] ; then
-                            new_chunk_shape[$i]=${data_shape[$i]}
-                        fi
-                    done
-
+ 		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
                     # Rechunk to the data variable when the new chunk
                     # size is strictly greater than the original
                     # chunks size
+
+                    # Check that chunk shape is not larger than data shape
+                    for n in "${!new_chunk_shape[@]}"
+                    do
+                        if [ "${new_chunk_shape[n]}" -gt "${data_shape[n]}" ]; then
+                            new_chunk_shape[n]=${data_shape[n]}
+                        fi
+                    done
                     CHUNK=${new_chunk_shape[*]}
                     CHUNK=${CHUNK// /x}
+
                     data="-f ${variable}:SHUF"
                     data="$data -f ${variable}:GZIP=$gzip"
                     data="$data -f ${variable}:FLET"
