@@ -21,7 +21,7 @@
 # 
 # ====================================================================
 vn=0.6
-release_date="2025-12-18"
+release_date="2025-12-19"
 
 iam_path=$(which "$0")
 iam=$(basename "$iam_path")
@@ -75,7 +75,7 @@ the start of the file, before all of the variables' data chunks.
 
 .IP "" 0
 
-Any of these variables that already has an approriate chunk size will
+Any of these variables that already has an appropriate chunk size will
 \fBnot\fR be rechunked. If no variables need rechunking then
 \fB$iam\fR will only collate the internal file metadata, which is very
 fast in comparison to also having to rechunk one or more variables.
@@ -87,6 +87,12 @@ checksum algorithm activated.
 
 Files repacked with \fB$iam\fR are guaranteed to pass the CMIP7
 file-layout checks tested by \fBcmip7_check_packing\fR.
+    
+.SH DEPENDENCIES
+
+Requires that the command-line tools \fBh5stat\fR, \fBh5dump\fR, and
+\fBh5repack\fR are available from a location given by the PATH
+environment variable.
 
 .SH METHOD
 
@@ -106,8 +112,9 @@ bytes. If \fB-d\fR is unset, then the \fIsize\fR defaults to $size
 
 The chunk shape will only ever be changed along the leading
 (i.e. slowest moving) dimension of the data, such that resulting chunk
-size in the new file is as large as possible \fBwithout exceeding\fR
-the \fIsize\fR.
+size in the new file is as large as possible without exceeding
+\fIsize\fR (note that the resulting chunk size could be smaller than
+\fIsize\fR).
 
 However, if the original uncompressed chunk size in the input file is
 already larger than \fIsize\fR, or the data in the input file only has
@@ -144,7 +151,7 @@ for all rechunked variables.
 All input files successfully repacked.
 
 .IP \fB1\fR
-A failure occured during the repacking of one or more input files. The
+A failure occurred during the repacking of one or more input files. The
 exit only happens only after it has been attempted to repack all input
 files, some of which may have been repacked successfully. The files
 which could not be repacked may be found by looking for FAILED in the
@@ -207,7 +214,7 @@ chunk shape from example 1).
 .fi
 
 If the repacked file \fBfile.nc_cmip7repack\fR is itself repacked,
-then since none of the variables now need rechunking, only the internl
+then since none of the variables now need rechunking, only the internal
 metadata is collated, which is very fast:
 
 .nf

@@ -19,20 +19,20 @@ if __name__ == "__main__":
 
     iam = "check_cmip7_packing"
     __version__ = "0.6"
-    __date__ = "2025-12-18"
+    __date__ = "2025-12-19"
 
+    minimum_version = Version("1.0.1")
     pyfive_version = Version(version("pyfive"))
-    if pyfive_version < Version("1.0"):
+    if pyfive_version < minimum_version:
         raise RuntimeError(
-            f"{iam} requires Python library 'pyfive' version 1.0 or newer. "
+            f"{iam} requires Python library pyfive>={minimum_version}. "
             f"Got: {pyfive_version}"
         )
 
     def print_help():
         import subprocess
 
-        manpage = rf"""
-.TH {iam} 1 {__date__} {__version__}
+        manpage = rf""".TH {iam} 1 {__date__} {__version__}
 .
 .SH NAME
 
@@ -208,7 +208,7 @@ the extent permitted by law.
         action="store_true",
         help="Verbose mode. Print extra information.",
     )
-    parser.add_argument("-V", action="store_true", help="Print versionnumber and exit.")
+    parser.add_argument("-V", action="store_true", help="Print version number and exit.")
 
     if "-h" in sys.argv:
         print_help()

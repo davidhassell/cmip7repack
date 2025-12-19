@@ -51,9 +51,10 @@ and
 are available from the `PATH` environment variable. These tools are
 usually automatically installed as part of a netCDF installation.
 
-### man page
+### man pages
 
 ```
+$ cmip7repack -h
 cmip7repack(1)              General Commands Manual             cmip7repack(1)
 
 NAME
@@ -69,71 +70,77 @@ DESCRIPTION
          called "time" in the root group), if it exists, to have a single com‐
          pressed chunk.
 
-       — Rechunk the time bounds variable  (defined  by  the  time  coordinate
-         variable's  "bounds"  attribute), if it exists, to have a single com‐
+       — Rechunk  the  time  bounds  variable  (defined by the time coordinate
+         variable's "bounds" attribute), if it exists, to have a  single  com‐
          pressed chunk.
 
-       — Rechunk the data variable (defined by  the  global  attribute  "vari‐
-         able_id"),  if  it  exists, to have a given chunk size (of at least 4
+       — Rechunk  the  data  variable  (defined by the global attribute "vari‐
+         able_id"), if it exists, to have a given chunk size (of  at  least  4
          MiB).
 
-       — Collate all of the internal file metadata to a contiguous block  near
+       — Collate  all of the internal file metadata to a contiguous block near
          the start of the file, before all of the variables' data chunks.
 
-       Any  of these variables that  already has an approriate chunk size will
+       Any of these variables that already has an appropriate chunk size  will
        not be rechunked. If no variables need rechunking then cmip7repack will
        only collate the internal file metadata, which is very fast in compari‐
        son to also having to rechunk one or more variables.
 
-       A rechunked variable is  de-interlaced  with  the  HDF5  shuffle  filter
-       (which  significantly improves compression) before being compressed with
-       zlib (see the -z option), and also has the Fletcher32 HDF5 checksum  al‐
+       A  rechunked  variable  is  de-interlaced  with the HDF5 shuffle filter
+       (which significantly improves compression) before being compressed with
+       zlib (see the -z option), and also has the Fletcher32 HDF5 checksum al‐
        gorithm activated.
 
-       Files  repacked with cmip7repack are guaranteed to pass the CMIP7 file-
+       Files repacked with cmip7repack are guaranteed to pass the CMIP7  file-
        layout checks tested by cmip7_check_packing.
 
+DEPENDENCIES
+       Requires  that  the command-line tools h5stat, h5dump, and h5repack are
+       available from a location given by the PATH environment variable.
+
 METHOD
-       Each input FILE is analysed using h5stat and h5dump, and then  repacked
-       using  h5repack, which changes the layout for objects in the new output
+       Each  input FILE is analysed using h5stat and h5dump, and then repacked
+       using h5repack, which changes the layout for objects in the new  output
        file. All file attributes and data values are unchanged.
 
 OPTIONS
        -d size
-              Rechunk the data variable  (the  variable  named  by  the  "vari‐
-              able_id"  global  attribute) to have the given uncompressed chunk
-              size in bytes. If -d is unset, then the size defaults to  4194304
+              Rechunk  the  data  variable  (the  variable named by the "vari‐
+              able_id" global attribute) to have the given uncompressed  chunk
+              size in bytes. If -d is unset, then the size defaults to 4194304
               (i.e. 4 MiB). The size must be at least 4194304.
 
-              The chunk shape will only ever be changed along the leading (i.e.
-              slowest  moving) dimension of the data, such that resulting chunk
-              size in the new file is as large as  possible  without  exceeding
-              the size.
+              The chunk shape will only ever  be  changed  along  the  leading
+              (i.e. slowest moving) dimension of the data, such that resulting
+              chunk size in the new file is as large as possible  without  ex‐
+              ceeding  size  (note  that  the  resulting  chunk  size could be
+              smaller than size).
 
-              However,  if  the  original  uncompressed chunk size in the input
-              file is already larger than size, or the data in the  input  file
-              only has one chunk, then the data variable will not be rechunked.
+              However, if the original uncompressed chunk size  in  the  input
+              file  is already larger than size, or the data in the input file
+              only has one chunk, then the data variable will not  be  rechun‐
+              ked.
 
        -h     Display this help and exit.
 
-       -o     Overwrite each input file with  its  repacked  version,  if  the
-              repacking  was successful. By default, a new file is created for
-              each input file, which has the same name with  the  addition  of
+       -o     Overwrite  each  input  file  with  its repacked version, if the
+              repacking was successful. By default, a new file is created  for
+              each  input  file,  which has the same name with the addition of
               the suffix "_cmip7repack".
 
        -V     Print version number and exit.
 
-       -x     Do  a dry run. Show the h5repack commands for repacking each in‐
-              put file, but do not run them. This allows the  commands  to  be
+       -x     Do a dry run. Show the h5repack commands for repacking each  in‐
+              put  file,  but  do not run them. This allows the commands to be
               edited before being run manually.
 
-       -z n   Specify  the zlib compression level (between 1 and 9, default 4)
+       -z n   Specify the zlib compression level (between 1 and 9, default  4)
               for all rechunked variables.
-	      
+
 EXIT STATUS
        0      All input files successfully repacked.
 
-       1      A failure occured during the repacking  of  one  or  more  input
+       1      A  failure  occurred  during  the repacking of one or more input
               files. The exit only happens only after it has been attempted to
               repack  all  input  files,  some of which may have been repacked
               successfully. The files which could not be repacked may be found
@@ -166,7 +173,7 @@ EXAMPLES
 
            cmip7repack: 1/1 files (134892546 B) repacked in 5 seconds (26978509 B/s) to total size 94942759 B (29% smaller than input files)
 
-     2. Repack a file using the non-default  data  variable  chunk  size  of
+       2. Repack a file using the non-default  data  variable  chunk  size  of
        8388608,  replacing  the  original file with its repacked version. Note
        that the data variable is rechunked to chunks of shape 75 x 144  x  192
        elements  (compare  that  with  the rechunked data variable chunk shape
@@ -189,8 +196,8 @@ EXAMPLES
            cmip7repack: 1/1 files (134892546 B) repacked in 5 seconds (26978509 B/s) to total size 94856788 B (29% smaller than input files)
 
        If the repacked file file.nc_cmip7repack is itself repacked, then since
-       none of the variables now need rechunking, only the internl metadata is
-       collated, which is very fast:
+       none  of  the variables now need rechunking, only the internal metadata
+       is collated, which is very fast:
 
            $ cmip7repack -o file.nc_cmip7repack
            cmip7repack: Version 0.6 at /usr/bin/cmip7repack
@@ -262,14 +269,14 @@ REPORTING BUGS
        Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
 
 COPYRIGHT
-       Copyright   2025   License   BSD  3-Clause (<https://opensource.org/li‐
-       cense/bsd-3-clause). This is free software: you are free to change  and
+       Copyright  2025   License   BSD   3-Clause   https://opensource.org/li‐
+       cense/bsd-3-clause.  This  is free software: you are free to change and
        redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO
        cmip7_check_packing(1), h5repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                               2025-12-18                    cmip7repack(1)
+0.6                               2025-12-19                    cmip7repack(1)
 ```
 
 # `check_cmip7_packing` documentation
@@ -285,44 +292,45 @@ location in the `PYTHONPATH` environment variable.
 ### man page
 
 ```
-check_cmip7_packing(1)      General Commands Manual      check_cmip7_packing(1)
+$ check_cmip7_packing -h
+check_cmip7_packing(1)      General Commands Manual     check_cmip7_packing(1)
 
 NAME
-       check_cmip7_packing  - check that datasets meet the CMIP7 internal pack‐
+       check_cmip7_packing - check that datasets meet the CMIP7 internal pack‐
        ing requirements.
 
 SYNOPSIS
-       check_cmip7_packing  [-h] [-v] [-V] FILE [FILE ...]
+       check_cmip7_packing [-h] [-v] [-V] FILE [FILE ...]
 
 DESCRIPTION
        For each input FILE, check_cmip7_packing will
 
-       — Check that the time coordinate variable (assumed to  be  the  variable
-         called  "time" in the root group), if it exists, has a single chunk or
+       — Check that the time coordinate variable (assumed to be  the  variable
+         called "time" in the root group), if it exists, has a single chunk or
          is contiguous.
 
-       — Check that the time bounds variable (identified by the time coordinate
-         variable's "bounds" attribute), if it exists, has a single chunk or is
-         contiguous.
+       — Check that the time bounds variable (identified by the  time  coordi‐
+         nate variable's "bounds" attribute), if it exists, has a single chunk
+         or is contiguous.
 
-       — Check that data variable (identified by the global  "variable_id"  at‐
-         tribute),  if  it exists, has a single chunk, is contiguous, or has an
-         uncompressed chunk size of at least 41943044 bytes (i.e. 4 MiB).  How‐
-         ever,  the  check will still pass for smaller chunks if increasing the
-         chunk's shape by one element along the leading (i.e.  slowest  moving)
+       — Check that data variable (identified by the global "variable_id"  at‐
+         tribute),  if it exists, has a single chunk, is contiguous, or has an
+         uncompressed chunk size of at least 41943044 bytes (i.e. 4 MiB). How‐
+         ever,  the check will still pass for smaller chunks if increasing the
+         chunk's shape by one element along the leading (i.e. slowest  moving)
          dimension of the data would result in a chunk size of at least 4 MiB.
 
-       — Check that all of the internal file metadata is collated to a contigu‐
-         ous  block  near  the  start of the file, before all of the variables'
-         data chunks.
+       — Check  that  all  of the internal file metadata is collated to a con‐
+         tiguous block near the start of the file, before  all  of  the  vari‐
+         ables' data chunks.
 
-       Any input FILE that has been output by cmip7repack is guaranteed to pass
-       these checks.
+       Any  input  FILE  that  has been output by cmip7repack is guaranteed to
+       pass these checks.
 
 DEPENDENCIES
-       Requires  Python  3.10  or  later,  and that the Python libraries pyfive
-       (https://pyfive.readthedocs.io), numpy (https://numpy.org), and  packag‐
-       ing  (https://packaging.pypa.io) are available from a location given by
+       Requires Python 3.10 or later, and that  the  Python  libraries  pyfive
+       (https://pyfive.readthedocs.io), numpy (https://numpy.org), and packag‐
+       ing (https://packaging.pypa.io) are available from a location given  by
        the PYTHONPATH environment variable.
 
 METHOD
@@ -336,10 +344,11 @@ OPTIONS
        -V     Print version number and exit.
 
 EXIT STATUS
-       0      All input files meet the CMIP7 internal packing requirements.
+       0      All  input  files  meet the CMIP7 internal file packing require‐
+              ments.
 
-       1      At least one input file does not meet the CMIP7 internal  packing
-              requirements. All files were checked.
+       1      At least one input file does not meet the  CMIP7  internal  file
+              packing requirements. All files were checked.
 
        2      An incorrect command-line option. No input files are checked.
 
@@ -347,11 +356,11 @@ EXIT STATUS
 
        4      An input file can not be opened. No input files are checked.
 
-       5      An  input  file  can be opened, but not parsed as an HDF5 file. No
+       5      An  input file can be opened, but not parsed as an HDF5 file. No
               input files are checked.
 
 EXAMPLES
-       1. Testing two files that both pass the checks. The exit code is  0  be‐
+       1. Testing two files that both pass the checks. The exit code is 0  be‐
        cause all files passed.
 
            $ check_cmip7_packing file1.nc file2.nc
@@ -363,7 +372,7 @@ EXAMPLES
        2. Repeating the test of example 1. with verbose mode enabled.
 
            $ check_cmip7_packing -v file1.nc file2.nc
-           check_cmip7_packing: Version 0.5 at /usr/bin/check_cmip7_packing
+           check_cmip7_packing: Version 0.6 at /usr/bin/check_cmip7_packing
            check_cmip7_packing: pyfive: Version 1.0.0 at /usr/bin/pyfive/__init__.py
            check_cmip7_packing: date-time: 2025-11-13 09:31:57.232149
 
@@ -373,8 +382,8 @@ EXAMPLES
            check_cmip7_packing: time taken: 0.0622 seconds
            check_cmip7_packing: 2/2 files passed, 0/2 files failed
 
-       3.  Testing  five  files, one of which (file5.nc) passes the checks, and
-       the other four fail at least one check each. The exit code is 1  because
+       3.  Testing  five files, one of which (file5.nc) passes the checks, and
+       the other four fail at least one check each. The exit code is 1 because
        not all files passed.
 
            $ check_cmip7_packing file[3-7].nc
@@ -390,17 +399,17 @@ AUTHORS
        Written by David Hassell and Ezequiel Cimadevilla.
 
 REPORTING BUGS
-       Report any bugs to https://github.com/NCAS-CMS/cmip7repack/issues
+       Report any bugs to https://github.com/NCAS-CMS/cmip7_repack/issues
 
 COPYRIGHT
-       Copyright   2025   License   BSD   3-Clause  (https://opensource.org/li‐
-       cense/bsd-3-clause). This is free software: you are free to  change  and
+       Copyright   2025   License   BSD  3-Clause  (https://opensource.org/li‐
+       cense/bsd-3-clause). This is free software: you are free to change  and
        redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO
        cmip7repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                                2025-12-18            check_cmip7_packing(1)
+0.6                               2025-12-19            check_cmip7_packing(1)
 ```
 
 # Linting
