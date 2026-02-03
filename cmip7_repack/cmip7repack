@@ -26,7 +26,7 @@ release_date="2025-12-19"
 iam_path=$(which "$0")
 iam=$(basename "$iam_path")
 
-usage="USAGE: $iam [-d size] [-h] [-o] [-V] [-x] [-z n] FILE [FILE ...]\nFull man page with -h"
+usage="USAGE: $iam [-d size] [-h] [-o] [-V] [-x] [-z n] [-b data-variable-name] FILE [FILE ...]\nFull man page with -h"
 
 # Defaults
 gzip=4 # -z
@@ -441,7 +441,7 @@ if [ $# -eq 0 ]; then
     exit 2
 fi
 
-while getopts ":d:hoVxz:" opt
+while getopts ":d:hoVxz:b:" opt
 do
     case $opt in
       d) size=$OPTARG
@@ -466,6 +466,7 @@ do
              echo -e "$usage" >&2
              exit 2
          fi ;;
+      b) data_variable=$OPTARG  ;;       
       \?) echo -e "Invalid option: -$OPTARG\n$usage" >&2
           exit 2 ;;
       :) echo "Option -$OPTARG requires an argument" >&2
@@ -616,10 +617,15 @@ do
     data=""
     if [ "$size" != false ]; then
         # Find the data variable name
-        variable=$(h5dump --attribute variable_id "$file" 2>/dev/null \
-                     | grep "(0)" -m 1 \
-                     | sed -n 's/.*"\(\w*\)"/\1/p')
-
+	if [ "${data_variable}" = "" ]; then
+            variable=$(h5dump --attribute variable_id "$file" 2>/dev/null \
+                         | grep "(0)" -m 1 \
+                         | sed -n 's/.*"\(\w*\)"/\1/p')
+        else
+	    echo "using use data variable ${data_variable}"
+	    variable=${data_variable}
+	fi
+	
         if [ "$variable" != "" ]; then
             variable="/$variable"
 
