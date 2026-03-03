@@ -1,3 +1,10 @@
+Version 1.0
+-----------
+
+**2026-03-03**
+
+* Changed dependency: ``pyfive>=1.1.1``
+
 Version 0.6
 -----------
 

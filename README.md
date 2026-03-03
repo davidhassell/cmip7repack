@@ -1,5 +1,3 @@
-## Note: _These tools are currently available for testing. Real CMIP7 workflows should use version 1.0 or later._
-
 # `cmip7repack` and `check_cmip7_packing`
 
 `cmip7repack` is a command-line tool for Unix-like platforms, bespoke
@@ -17,7 +15,7 @@ output by `cmip7repack` is guaranteed to pass the checks.
         
 # Citation
 
-Hassell, D., & Cimadevilla Alvarez, E. (2025). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
+Hassell, D., & Cimadevilla Alvarez, E. (2026). cmip7repack: Repack CMIP7 netCDF-4 datasets. Zenodo. https://doi.org/10.5281/zenodo.17550919
 
 # Installation
 
@@ -157,7 +155,7 @@ EXAMPLES
        able is rechunked to chunks of shape 37 x 144 x 192 elements.
 
            $ cmip7repack -o file.nc
-           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: Version 1.0 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:06:25 GMT 2025
@@ -180,7 +178,7 @@ EXAMPLES
        from example 1).
 
            $ cmip7repack -d 8388608 file.nc
-           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: Version 1.0 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:07:15 GMT 2025
@@ -200,7 +198,7 @@ EXAMPLES
        is collated, which is very fast:
 
            $ cmip7repack -o file.nc_cmip7repack
-           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: Version 1.0 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:07:43 GMT 2025
@@ -220,7 +218,7 @@ EXAMPLES
        put file, but do not run them.
 
            $ cmip7repack -x file.nc
-           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: Version 1.0 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:08:02 GMT 2025
@@ -235,7 +233,7 @@ EXAMPLES
        repacking the files with separate commands, but may be more convenient.
 
            $ cmip7repack -o file[12].nc
-           cmip7repack: Version 0.6 at /usr/bin/cmip7repack
+           cmip7repack: Version 1.0 at /usr/bin/cmip7repack
            cmip7repack: h5repack: Version 1.14.6 at /usr/bin/h5repack
 
            cmip7repack: date-time: Wed  5 Nov 12:09:13 GMT 2025
@@ -276,7 +274,7 @@ COPYRIGHT
 SEE ALSO
        cmip7_check_packing(1), h5repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                               2025-12-19                    cmip7repack(1)
+1.0                               2026-03-03                    cmip7repack(1)
 ```
 
 # `check_cmip7_packing` documentation
@@ -372,7 +370,7 @@ EXAMPLES
        2. Repeating the test of example 1. with verbose mode enabled.
 
            $ check_cmip7_packing -v file1.nc file2.nc
-           check_cmip7_packing: Version 0.6 at /usr/bin/check_cmip7_packing
+           check_cmip7_packing: Version 1.0 at /usr/bin/check_cmip7_packing
            check_cmip7_packing: pyfive: Version 1.0.0 at /usr/bin/pyfive/__init__.py
            check_cmip7_packing: date-time: 2025-11-13 09:31:57.232149
 
@@ -409,7 +407,7 @@ COPYRIGHT
 SEE ALSO
        cmip7repack(1), h5stat(1), h5dump(1), ncdump(1)
 
-0.6                               2025-12-19            check_cmip7_packing(1)
+1.0                               2026-03-03            check_cmip7_packing(1)
 ```
 
 # Linting
