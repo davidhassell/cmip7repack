@@ -30,7 +30,7 @@ usage="USAGE: $iam [-d size] [-h] [-o] [-V] [-x] [-z n] [-b data-variable-name] 
 
 # Defaults
 gzip=4 # -z
-size=4194304 # -d
+size=4196 #4194304 # -d
 size_MiB=4
 version=false # -V
 overwrite=false # -o
@@ -108,7 +108,7 @@ are unchanged.
 Rechunk the data variable (the variable named by the "variable_id"
 global attribute) to have the given uncompressed chunk \fIsize\fR in
 bytes. If \fB-d\fR is unset, then the \fIsize\fR defaults to $size
-(i.e. $size_MiB MiB). The \fIsize\fR must be at least $size.
+(i.e. $size_cmip7MiB MiB). The \fIsize\fR must be at least $size.
 
 The chunk shape will only ever be changed along the leading
 (i.e. slowest moving) dimension of the data, such that resulting chunk
@@ -415,6 +415,7 @@ print_rechunk_info()
     _data=${data_shape[*]}
     _data=${_data// /, }
 
+    echo $contiguous
     if [ "$contiguous" = "true" ]; then
         _chunk="contiguous"
     else
@@ -450,12 +451,12 @@ do
              echo "Option -d requires a numerical argument" >&2
              echo -e "$usage" >&2
              exit 2
-         fi
-         if [ "$size" -lt 419430 ]; then
-             echo "Option -d requires an argument of at least 4194304 (i.e. 4 MiB)" >&2
-             echo -e $"$usage" >&2
-             exit 2
          fi ;;
+#         if [ "$size" -lt 419430 ]; then
+#             echo "Option -d requires an argument of at least 4194304 (i.e. 4 MiB)" >&2
+#             echo -e $"$usage" >&2
+#             exit 2
+#         fi ;;
       h) helpFunction ;;
       o) overwrite=true ;;
       V) version=true ;;
@@ -480,6 +481,7 @@ echo "$iam: Version $vn at $iam_path"
 if [ "$version" = true ]; then
     exit 0
 fi
+echo $size
 
 # --------------------------------------------------------------------
 # Check that the HDF5 commands are available
@@ -632,11 +634,14 @@ do
             # Set global variables
             get_chunk_info
 
+	    echo AAAAAA1 $multiple_chunks
+		    
 	    # Initialize the original chunk size to the target size.
 	    # We'll set it to its actual value later, but only if
 	    # there's more than one current chunk.
 	    original_chunk_size=$size
 	    if [ "$multiple_chunks" = "true" ]; then
+		echo AAAAAA2
                 # Find the word size, in bytes, of the data values.
                 wordsize=$(get_wordsize)
 
@@ -672,6 +677,7 @@ do
                 do
                     new_chunk_size=$((new_chunk_size * new_chunk_shape[n] ))
                 done
+		echo AAAAAA9
 
  		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
                     # Rechunk to the data variable when the new chunk
