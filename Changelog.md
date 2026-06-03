@@ -1,10 +1,10 @@
 Version 1.1
 -----------
 
-**2026-04-24**
+**2026-06-03**
 
 * Fixed incorrect minumum chunk size when using the -d option
-  (https://github.com/NCAS-CMS/cmip7_repack/issues/29)
+  (<https://github.com/NCAS-CMS/cmip7_repack/issues/29>)
 
 Version 1.0
 -----------
