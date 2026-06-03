@@ -20,8 +20,8 @@
 # https://github.com/NCAS-CMS/cmip7repack/issues
 # 
 # ====================================================================
-vn=1.0
-release_date="2026-03-03"
+vn=1.1
+release_date="2026-04-24"
 
 iam_path=$(which "$0")
 iam=$(basename "$iam_path")
@@ -451,7 +451,7 @@ do
              echo -e "$usage" >&2
              exit 2
          fi
-         if [ "$size" -lt 419430 ]; then
+         if [ "$size" -lt 4194304 ]; then
              echo "Option -d requires an argument of at least 4194304 (i.e. 4 MiB)" >&2
              echo -e $"$usage" >&2
              exit 2
@@ -660,14 +660,14 @@ do
                     n=$((n + 1))
                 done
 
-		# Find the new chunk size in bytes
-		new_chunk_size=$wordsize
+                # Find the new chunk size in bytes
+                new_chunk_size=$wordsize
                 for n in "${!new_chunk_shape[@]}"
                 do
                     new_chunk_size=$((new_chunk_size * new_chunk_shape[n] ))
                 done
 
- 		if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
+                if [ "$new_chunk_size" -gt "$original_chunk_size" ]; then
                     # Rechunk to the data variable when the new chunk
                     # size is strictly greater than the original
                     # chunks size
